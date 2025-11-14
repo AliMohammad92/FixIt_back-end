@@ -16,4 +16,5 @@ return [
     'invalid_or_expired_otp' => 'Invalid or expired OTP.',
     'registration_failed' => 'Registration failed. Please try again.',
 
+    'ministry_created' => 'Ministry has been created successfully.',
 ];

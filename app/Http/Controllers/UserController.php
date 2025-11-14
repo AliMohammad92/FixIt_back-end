@@ -35,6 +35,6 @@ class UserController extends Controller
             return $this->errorResponse(__('messages.invalid_credentials'), 401);
         }
 
-        return $this->successResponse(['token' => $result], __('messages.login_success'), 200);
+        return $this->successResponse($result, __('messages.login_success'), 200);
     }
 }

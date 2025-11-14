@@ -16,4 +16,5 @@ return [
     'invalid_or_expired_otp' => 'رمز التحقق (OTP) غير صالح أو منتهي الصلاحية.',
     'registration_failed' => 'فشل التسجيل. يرجى المحاولة مرة أخرى.',
 
+    'ministry_created' => 'تم إنشاء الوزارة بنجاح.',
 ];

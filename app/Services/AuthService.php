@@ -42,6 +42,7 @@ class AuthService
 
         $user = User::where('id', Auth::id())->first();
         $token = $user->createToken('auth_token')->plainTextToken;
-        return $token;
+        $data = ['user' => $user, 'token' => $token];
+        return $data;
     }
 }

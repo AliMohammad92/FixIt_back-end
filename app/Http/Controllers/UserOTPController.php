@@ -23,7 +23,6 @@ class UserOTPController extends Controller
         $user_id = $request->input('user_id');
         $status = $otpService->verifyOTP($otpCode, $user_id);
 
-
         if ($status) {
             $user = User::find($user_id);
             $user->status = true;
