@@ -23,9 +23,7 @@ Route::prefix('complaint')->middleware('auth:sanctum')->controller(ComplaintCont
     Route::get('get-complaints/{ministry_branch_id}', 'getComplaints');
 });
 
-Route::get('get-governorates', function () {
-    return DB::table('governorates')->get();
-})->middleware('auth:sanctum');
+Route::get('get-governorates', [MinistryController::class, 'getGovernorates'])->middleware('auth:sanctum');
 
 Route::prefix('ministry')->middleware('auth:sanctum')->group(function () {
     Route::controller(MinistryController::class)->group(function () {

@@ -21,6 +21,7 @@ return [
     'ministry_branch_created' => 'تم إنشاء فرع للوزارة بنجاح.',
     'ministry_branches_retrieved' => 'تم استرجاع بيانات فروع الوزارة بنجاح.',
     'ministry_not_found' => 'الوزارة غير موجودة.',
+    'governorates_fetched' => 'تم استرجاع المحافظات بنجاح.',
 
     'employee_added' => 'تم إضافة الموظف بنجاح. تم إرسال رمز التحقق (OTP) إلى بريده الالكتروني.',
     'employees_retrieved' => 'تم استرجاع بيانات الموظفين بنجاح.',

@@ -21,6 +21,7 @@ return [
     'ministry_branch_created' => 'Ministry\'s branch has been created successfully.',
     'ministry_branches_retrieved' => 'Ministry\'s branches data retrieved successfully.',
     'ministry_not_found' => 'Ministry not found.',
+    'governorates_fetched' => 'Governorates fetched successfully.',
 
     'employee_added' => 'Employee has been added successfully. An OTP has been sent to their email.',
     'employees_retrieved' => 'Employees data retrieved successfully.',

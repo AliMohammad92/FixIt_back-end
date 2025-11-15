@@ -8,6 +8,7 @@ use App\Models\Ministry;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class MinistryController extends Controller
 {
@@ -42,5 +43,11 @@ class MinistryController extends Controller
         $data = MinistryResource::collection($ministry);
 
         return $this->successResponse($data, __('messages.ministry_branches_fetched'), 200);
+    }
+
+    public function getGovernorates()
+    {
+        $governorates = DB::table('governorates')->get();
+        return $this->successResponse($governorates, __('messages.governorates_fetched'), 200);
     }
 }
