@@ -11,10 +11,11 @@ class Complaint extends Model
         'type',
         'description',
         'status',
-        'citizen_id',
-        'location',
-        'ministry_branch_id',
         'governorate_id',
+        'city_name',
+        'street_name',
+        'citizen_id',
+        'ministry_branch_id',
     ];
 
     public function media()

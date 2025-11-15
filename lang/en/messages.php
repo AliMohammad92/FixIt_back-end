@@ -22,8 +22,10 @@ return [
     'ministry_branches_retrieved' => 'Ministry\'s branches data retrieved successfully.',
     'ministry_not_found' => 'Ministry not found.',
 
-    'employee_added' => 'Employee has been added successfully.',
+    'employee_added' => 'Employee has been added successfully. An OTP has been sent to their email.',
     'employees_retrieved' => 'Employees data retrieved successfully.',
+    'employee_promoted' => 'Employee has been promoted successfully.',
+    'unauthorized_promotion' => 'You are not authorized to promote to the specified position.',
 
     'token_refreshed' => 'Token has been refreshed successfully.',
     'invalid_refresh_token' => 'Invalid refresh token.',

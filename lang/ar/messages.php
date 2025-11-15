@@ -22,8 +22,10 @@ return [
     'ministry_branches_retrieved' => 'تم استرجاع بيانات فروع الوزارة بنجاح.',
     'ministry_not_found' => 'الوزارة غير موجودة.',
 
-    'employee_added' => 'تم إضافة الموظف بنجاح.',
+    'employee_added' => 'تم إضافة الموظف بنجاح. تم إرسال رمز التحقق (OTP) إلى بريده الالكتروني.',
     'employees_retrieved' => 'تم استرجاع بيانات الموظفين بنجاح.',
+    'employee_promoted' => 'تم ترقية الموظف بنجاح.',
+    'unauthorized_promotion' => 'ليس لديك صلاحية لترقية إلى المنصب المحدد.',
 
     'token_refreshed' => 'تم تحديث الرمز بنجاح.',
     'invalid_refresh_token' => 'رمز التحديث غير صالح.',

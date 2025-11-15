@@ -7,6 +7,7 @@ use App\Http\Resources\ComplaintResource;
 use App\Models\Complaint;
 use App\Models\MinistryBranch;
 use App\Models\User;
+use App\Services\FileManagerService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,7 @@ use Illuminate\Support\Str;
 class ComplaintController extends Controller
 {
     use ResponseTrait;
-    public function submit(SubmitComplaintRequest $request)
+    public function submit(SubmitComplaintRequest $request, FileManagerService $fileManagerService)
     {
         $data = $request->validated();
 
@@ -25,6 +26,7 @@ class ComplaintController extends Controller
         $data['citizen_id'] = Auth::user()->citizen->id;
 
         $ministryBranch = MinistryBranch::with('ministry')->findOrFail($data['ministry_branch_id']);
+        $ministryAbbr = $ministryBranch->ministry->abbreviation;
 
         $governorateCode = DB::table('governorates')
             ->where('id', $data['governorate_id'])
@@ -32,28 +34,24 @@ class ComplaintController extends Controller
 
         $data['reference_number'] = sprintf(
             '%s_%s_%s',
-            $ministryBranch->ministry->abbreviation,
+            $ministryAbbr,
             $governorateCode,
             Str::random(8)
         );
 
         $complaint = Complaint::create($data);
 
-        foreach ($request->file('media', []) as $file) {
-            $path = $file->store('complaints', 'public');
-
-            $complaint->media()->create([
-                'path' => $path,
-                'type' => in_array(
-                    $file->getClientOriginalExtension(),
-                    ['pdf', 'doc', 'docx']
-                ) ? 'file' : 'img',
-            ]);
-        }
+        $fileManagerService->storeComplaintMedia(
+            $complaint,
+            $request->file('media'),
+            $ministryAbbr,
+            $governorateCode,
+            $data['reference_number']
+        );
 
         return $this->successResponse(
             __('messages.complaint_submitted'),
-            ['complaint' => $complaint],
+            ['complaint' => new ComplaintResource($complaint)],
             201
         );
     }

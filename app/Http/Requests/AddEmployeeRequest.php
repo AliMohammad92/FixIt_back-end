@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddEmployeeRequest extends FormRequest
+class AddEmployeeRequest extends BaseUserRequest
 {
     public function authorize(): bool
     {
@@ -13,12 +13,11 @@ class AddEmployeeRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'user_id' => 'required|exists:users,id',
+        return array_merge($this->commonRules(), [
             'position' => 'required|string|max:255',
             'start_date' => 'required|date',
-            'branch_id' => 'required|exists:ministry_branches,id',
+            'branch_id' => 'nullable|exists:ministry_branches,id',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-        ];
+        ]);
     }
 }
