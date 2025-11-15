@@ -21,4 +21,11 @@ return [
     'ministry_branch_created' => 'Ministry\'s branch has been created successfully.',
     'ministry_branches_fetched' => 'Ministry\'s branches data fetched successfully.',
     'ministry_not_found' => 'Ministry not found.',
+
+    'token_refreshed' => 'Token has been refreshed successfully.',
+    'invalid_refresh_token' => 'Invalid refresh token.',
+
+    'complaint_submitted' => 'Complaint submitted successfully.',
+    'complaints_fetched' => 'Complaints data fetched successfully.',
+    'complaint_not_found' => 'Complaint not found.',
 ];

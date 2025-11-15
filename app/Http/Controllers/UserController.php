@@ -37,4 +37,18 @@ class UserController extends Controller
 
         return $this->successResponse($result, __('messages.login_success'), 200);
     }
+
+    public function refreshToken(Request $request, AuthService $authService)
+    {
+        $request->validate([
+            'refresh_token' => 'required|string',
+        ]);
+
+        $result = $authService->refreshToken($request->input('refresh_token'));
+        if (!$result) {
+            return $this->errorResponse(__('messages.invalid_refresh_token'), 401);
+        }
+
+        return $this->successResponse($result, __('messages.token_refreshed'), 200);
+    }
 }

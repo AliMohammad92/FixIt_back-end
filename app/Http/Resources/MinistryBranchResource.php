@@ -20,7 +20,7 @@ class MinistryBranchResource extends JsonResource
             'location' => $this->location,
             'ministry_id' => $this->ministry_id,
             'ministry_name' => $this->ministry->ministry_name,
-            'created_at' => $this->created_at->format('Y-m-d H:i'),
+            'created_at' => $this->created_at->format('Y-m-d H:i A'),
         ];
     }
 }

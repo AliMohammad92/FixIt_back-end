@@ -21,4 +21,11 @@ return [
     'ministry_branch_created' => 'تم إنشاء فرع للوزارة بنجاح.',
     'ministry_branches_fetched' => 'تم استرجاع بيانات فروع الوزارة بنجاح.',
     'ministry_not_found' => 'الوزارة غير موجودة.',
+
+    'token_refreshed' => 'تم تحديث الرمز بنجاح.',
+    'invalid_refresh_token' => 'رمز التحديث غير صالح.',
+
+    'complaint_submitted' => 'تم تقديم الشكوى بنجاح.',
+    'complaints_fetched' => 'تم استرجاع بيانات الشكاوى بنجاح.',
+    'complaint_not_found' => 'الشكوى غير موجودة.',
 ];
