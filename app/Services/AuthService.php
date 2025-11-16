@@ -48,6 +48,11 @@ class AuthService
         }
 
         $user = User::where('id', Auth::id())->first();
+
+        if (!$user->status) {
+            return false;
+        }
+
         $access_token = $user->createToken('auth_token', ['*']);
         $refresh_token = Str::random(64);
         $access_token->accessToken->update(['expires_at' => now()->addMinutes(15)]);
