@@ -2,119 +2,98 @@
 
 namespace App\Http\Controllers;
 
+use App\DAO\EmployeeDAO;
 use App\Http\Requests\AddEmployeeRequest;
 use App\Http\Resources\EmployeeResource;
 use App\Models\Employee;
 use App\Models\User;
+use App\Services\EmployeeService;
 use App\Services\OTPService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class EmployeeController extends Controller
 {
     use ResponseTrait;
 
-    public function add(AddEmployeeRequest $request, OTPService $otpService)
+    protected $dao;
+
+    public function __construct()
+    {
+        $this->dao = new EmployeeDAO();
+    }
+
+    public function add(AddEmployeeRequest $request, EmployeeService $employeeService, OTPService $otpService)
     {
         $data = $request->validated();
         $dataUser = $request->only(['first_name', 'last_name', 'email', 'phone', 'role', 'address']);
         $dataUser['password'] = bcrypt($dataUser['first_name'] . '12345');
-        $user = User::create($dataUser);
-        $employee = $user->employee()->create([
-            'position' => $data['position'],
-            'start_date' => $data['start_date'],
-            'ministry_branch_id' => $data['branch_id'] ?? null,
-            'end_date' => $data['end_date'] ?? null,
-        ]);
 
-        if (!$user || !$employee) {
+        $user = $this->dao->add($data, $dataUser);
+
+        if (!$user || !$user->employee) {
             $user ? $user->delete() : null;
             return $this->errorResponse(
-                __('messages.employee_creation_failed'),
                 [],
+                __('messages.employee_creation_failed'),
                 500
             );
         }
 
-        $user->assignRole('employee');
-        $otpService->resendOTP($user->id);
-
+        $employeeService->add($user, $otpService);
         return $this->successResponse(
-            __('messages.employee_added'),
             ['employee' => $user->employee],
+            __('messages.employee_added'),
             201
         );
     }
 
     public function getEmployees()
     {
-        $employees = EmployeeResource::collection(Employee::all());
+        $cacheKey = 'employees_all';
+        $employees = Cache::remember($cacheKey, 3600, function () {
+            return $this->dao->getAll();
+        });
+        $employees = EmployeeResource::collection($employees);
         return $this->successResponse(
-            __('messages.employees_retrieved'),
             ['employees' => $employees],
+            __('messages.employees_retrieved'),
             200
         );
     }
 
     public function getEmployeesInBranch($ministry_branch_id)
     {
-        $employees = EmployeeResource::collection(Employee::where('ministry_branch_id', $ministry_branch_id)->get());
+        $cacheKey = 'employees_branch_' . $ministry_branch_id;
+        $employees = Cache::remember($cacheKey, 3600, function () use ($ministry_branch_id) {
+            return $this->dao->getEmployeesInBranch($ministry_branch_id);
+        });
+
+        $employees = EmployeeResource::collection($employees);
         return $this->successResponse(
-            __('messages.employees_retrieved'),
             ['employees' => $employees],
+            __('messages.employees_retrieved'),
             200
         );
     }
 
-    public function promoteEmployee(Request $request, $employee_id)
+    public function promoteEmployee(Request $request, $employee_id, EmployeeService $employeeService)
     {
         $request->validate([
             'new_position' => 'required|string|max:255',
             'new_end_date' => 'nullable|date|after_or_equal:start_date',
         ]);
 
-        $employee = Employee::findOrFail($employee_id);
-        $postsion = $request->input('new_position');
-        $user = Auth::user();
-        $promotionRules = [
-            'ministry_manager' => [
-                'allowed_roles' => ['super_admin'],
-                'sync_roles'    => ['employee', 'ministry_manager'],
-            ],
-            'branch_manager' => [
-                'allowed_roles' => ['super_admin', 'ministry_manager'],
-                'sync_roles'    => ['employee', 'branch_manager'],
-            ],
-        ];
+        $new_position = $request->input('new_position');
+        $new_end_date = $request->input('new_end_date');
 
-        if (!isset($promotionRules[$postsion])) {
-            return $this->errorResponse(
-                __('messages.unauthorized_promotion'),
-                [],
-                403
-            );
-        }
-        $allowedRoles = $promotionRules[$postsion]['allowed_roles'];
-        if (!$user->hasAnyRole($allowedRoles)) {
-            return $this->errorResponse(
-                __('messages.unauthorized_promotion'),
-                [],
-                403
-            );
-        }
-
-        if ($request->filled('new_end_date')) {
-            $employee->end_date = $request->input('new_end_date');
-        }
-        $employee->position = $postsion;
-        $employee->user->syncRoles($promotionRules[$postsion]['sync_roles']);
-
-        $employee->save();
+        $employee = $employeeService->promoteEmployee($employee_id, $new_position, $new_end_date);
 
         return $this->successResponse(
-            __('messages.employee_promoted'),
             ['employee' => $employee],
+            __('messages.employee_promoted'),
             200
         );
     }

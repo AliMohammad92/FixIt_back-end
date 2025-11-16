@@ -2,21 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SignUpRequest;
+use App\Http\Resources\CitizenResource;
+use App\Models\User;
 use App\Services\SignUpService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CitizenController extends Controller
 {
     use ResponseTrait;
-    public function signUp(SignUpRequest $request, SignUpService $signUpService)
+    public function completeInfo(Request $request)
     {
-        $data = $signUpService->signUp($request);
-        if ($data) {
-            return $this->successResponse($data, 'We sent an OTP to your email, please check it', 201);
-        } else {
-            return $this->errorResponse('Registration failed', 500);
+        $request->validate([
+            'national_id' => 'required|string|unique:citizens,national_id',
+            'nationality' => 'required|string',
+        ]);
+        $user = User::find(Auth::user()->id);
+        if (!$user) {
+            return $this->errorResponse(
+                __('messages.user_not_found'),
+                [],
+                404
+            );
         }
+        $citizen = $user->citizen()->update([
+            'national_id' => $request->input('national_id'),
+            'nationality' => $request->input('nationality'),
+        ]);
+        return $this->successResponse(
+            new CitizenResource($user->citizen),
+            __('messages.citizen_updated'),
+        );
     }
 }

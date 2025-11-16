@@ -8,6 +8,7 @@ use App\Models\Ministry;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class MinistryController extends Controller
@@ -22,32 +23,38 @@ class MinistryController extends Controller
             return $this->successResponse($ministry, __('messages.ministry_created'), 201);
 
         return $this->errorResponse(__('messages.registration_failed'), 500);
-        return $this->errorResponse(__('messages.unauthorized'), 401);
     }
 
     public function getMinistries()
     {
-        $ministries = Ministry::all();
+        $ministries = Cache::remember('ministries_all', 3600, function () {
+            return Ministry::all();
+        });
         $data = MinistryResource::collection($ministries);
-        return $this->successResponse($data, __('messages.ministries_fetched'), 200);
+        return $this->successResponse($data, __('messages.ministries_retrieved'), 200);
     }
 
     public function getMinistryInfo($ministry_id)
     {
-        $ministry = Ministry::where('id', $ministry_id)->get();
+        $cacheKey = 'ministry_info_' . $ministry_id;
+        $ministry = Cache::remember($cacheKey, 3600, function () use ($ministry_id) {
+            return Ministry::where('id', $ministry_id)->get();
+        });
 
-        if (sizeof($ministry) < 1) {
+        if ($ministry->isEmpty()) {
             return $this->errorResponse(__('messages.ministry_not_found'), 404);
         }
 
         $data = MinistryResource::collection($ministry);
 
-        return $this->successResponse($data, __('messages.ministry_branches_fetched'), 200);
+        return $this->successResponse($data, __('messages.ministry_branches_retrieved'), 200);
     }
 
     public function getGovernorates()
     {
-        $governorates = DB::table('governorates')->get();
-        return $this->successResponse($governorates, __('messages.governorates_fetched'), 200);
+        $governorates = Cache::rememberForever('governorates_all', function () {
+            return DB::table('governorates')->get();
+        });
+        return $this->successResponse($governorates, __('messages.governorates_retrieved'), 200);
     }
 }

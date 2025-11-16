@@ -7,6 +7,7 @@ return [
     'true' => 'True.',
     'user_created' => 'User has been created successfully.',
     'user_deleted' => 'User has been deleted.',
+    'user_inactive' => 'Your account is not activated yet. Please check your email or enter the OTP code.',
     'invalid_credentials' => 'Invalid email or password.',
     'unauthorized' => 'You are not authorized to perform this action.',
     'login_success' => 'Login successful! Welcome aboard.',
@@ -21,7 +22,7 @@ return [
     'ministry_branch_created' => 'Ministry\'s branch has been created successfully.',
     'ministry_branches_retrieved' => 'Ministry\'s branches data retrieved successfully.',
     'ministry_not_found' => 'Ministry not found.',
-    'governorates_fetched' => 'Governorates fetched successfully.',
+    'governorates_retrieved' => 'Governorates retrieved successfully.',
 
     'employee_added' => 'Employee has been added successfully. An OTP has been sent to their email.',
     'employees_retrieved' => 'Employees data retrieved successfully.',
@@ -34,4 +35,7 @@ return [
     'complaint_submitted' => 'Complaint submitted successfully.',
     'complaints_retrieved' => 'Complaints data retrieved successfully.',
     'complaint_not_found' => 'Complaint not found.',
+
+    'citizen_updated' => 'Citizen information has been updated successfully.',
+    'user_not_found' => 'User not found.',
 ];

@@ -7,6 +7,7 @@ return [
     'true' => 'صحيح.',
     'user_created' => 'تم إنشاء المستخدم بنجاح.',
     'user_deleted' => 'تم حذف المستخدم.',
+    'user_inactive' => 'حسابك غير مفعل بعد. يرجى التحقق من بريدك الإلكتروني أو إدخال رمز التحقق (OTP).',
     'invalid_credentials' => 'البريد الالكتروني أو كلمة المرور غير صحيحة.',
     'unauthorized' => 'ليس لديك صلاحية لتنفيذ هذا الإجراء.',
     'login_success' => 'تم تسجيل الدخول بنجاح، أهلاً بك!',
@@ -21,7 +22,7 @@ return [
     'ministry_branch_created' => 'تم إنشاء فرع للوزارة بنجاح.',
     'ministry_branches_retrieved' => 'تم استرجاع بيانات فروع الوزارة بنجاح.',
     'ministry_not_found' => 'الوزارة غير موجودة.',
-    'governorates_fetched' => 'تم استرجاع المحافظات بنجاح.',
+    'governorates_retrieved' => 'تم استرجاع المحافظات بنجاح.',
 
     'employee_added' => 'تم إضافة الموظف بنجاح. تم إرسال رمز التحقق (OTP) إلى بريده الالكتروني.',
     'employees_retrieved' => 'تم استرجاع بيانات الموظفين بنجاح.',
@@ -34,4 +35,7 @@ return [
     'complaint_submitted' => 'تم تقديم الشكوى بنجاح.',
     'complaints_retrieved' => 'تم استرجاع بيانات الشكاوى بنجاح.',
     'complaint_not_found' => 'الشكوى غير موجودة.',
+
+    'citizen_updated' => 'تم تحديث معلومات المواطن بنجاح.',
+    'user_not_found' => 'المستخدم غير موجود.',
 ];
