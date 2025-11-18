@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ministries', function (Blueprint $table) {
+        Schema::create('ministry_translations', function (Blueprint $table) {
             $table->id();
-            $table->string('abbreviation')->unique();
-            $table->boolean('status')->default(true);
+            $table->foreignId('ministry_id')->constrained()->onDelete('cascade');
+            $table->string('locale')->index();
+            $table->string('name');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ministries');
+        Schema::dropIfExists('ministry_translations');
     }
 };

@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Ministry extends Model
 {
     protected $fillable = [
-        'ministry_name',
         'abbreviation',
-        'description',
         'status',
         'manager_id',
     ];
@@ -21,5 +19,16 @@ class Ministry extends Model
     public function manager()
     {
         return $this->belongsTo(Employee::class, 'manager_id');
+    }
+
+    public function translations()
+    {
+        return $this->hasMany(MinistryTranslation::class);
+    }
+
+    public function translation($locale)
+    {
+        $locale = $locale ?: app()->getLocale();
+        return $this->translations->where('locale', $locale)->first();
     }
 }

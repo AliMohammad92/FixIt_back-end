@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ministries', function (Blueprint $table) {
+        Schema::create('ministry_branch_translations', function (Blueprint $table) {
             $table->id();
-            $table->string('abbreviation')->unique();
-            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }
@@ -24,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ministries');
+        Schema::dropIfExists('ministry_branch_translations');
     }
 };

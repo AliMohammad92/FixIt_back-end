@@ -2,13 +2,12 @@
 
 namespace App\DAO;
 
+use App\Models\User;
+
 class UserDAO
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct()
+    public function findById($user_id)
     {
-        //
+        return User::where('id', $user_id)->get();
     }
 }

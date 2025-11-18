@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\DAO\CitizenDAO;
+use App\DAO\ComplaintDAO;
 use App\Http\Requests\SubmitComplaintRequest;
 use App\Http\Resources\ComplaintResource;
 use App\Models\Citizen;
@@ -20,6 +22,15 @@ use Illuminate\Support\Str;
 class ComplaintController extends Controller
 {
     use ResponseTrait;
+
+    protected $complaintDAO, $citizenDAO;
+
+    public function __construct()
+    {
+        $this->complaintDAO = new ComplaintDAO();
+        $this->citizenDAO = new CitizenDAO();
+    }
+
     public function submit(SubmitComplaintRequest $request, ComplaintService $complaintService)
     {
         $data = $request->validated();
@@ -35,14 +46,14 @@ class ComplaintController extends Controller
     public function getComplaints($ministry_branch_id)
     {
         $user = User::findOrFail(Auth::id());
-        if (!$user->hasRole('super_admin')) {
+        if (!$user->hasRole('super_admin') || !($user->hasRole('employee') && $user->employee->ministry_branch_id == $ministry_branch_id)) {
             return $this->errorResponse(
                 __('messages.unauthorized'),
                 403
             );
         }
 
-        $complaints = Complaint::where('ministry_branch_id', $ministry_branch_id)->get();
+        $complaints = $this->complaintDAO->getComplaints($ministry_branch_id);
         $complaints = ComplaintResource::collection($complaints);
         return $this->successResponse(
             ['complaints' => $complaints],
@@ -50,24 +61,12 @@ class ComplaintController extends Controller
         );
     }
 
-    public function getMyComplaints()
+    public function getMyComplaints(ComplaintService $complaintService)
     {
-        $user = User::with('citizen')->findOrFail(Auth::id());
+        $user = Auth::user();
         $citizen_id = $user->citizen->id;
-        $citizen = Citizen::findOrFail($citizen_id);
-        if ($citizen->user->id != Auth::id()) {
-            return $this->errorResponse(
-                [],
-                __('messages.unauthorized'),
-                403
-            );
-        }
 
-        $cacheKey = 'citizen_complaints_' . $citizen_id;
-        $complaints = Cache::remember($cacheKey, 3600, function () use ($citizen_id) {
-            return Complaint::where('citizen_id', $citizen_id)->get();
-        });
-        $complaints = ComplaintResource::collection($complaints);
+        $complaints = $complaintService->getMyComplaints($citizen_id);
 
         return $this->successResponse(
             ['complaints' => $complaints],
@@ -77,7 +76,7 @@ class ComplaintController extends Controller
 
     public function getComplaint($complaint_id)
     {
-        $complaint = Complaint::find($complaint_id);
+        $complaint = $this->complaintDAO->findById($complaint_id);
         if (!$complaint) {
             return $this->errorResponse(
                 [],

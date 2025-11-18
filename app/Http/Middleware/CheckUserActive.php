@@ -12,7 +12,7 @@ class CheckUserActive
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::user();
-        if (!$user || !$user->is_active) {
+        if (!$user || !$user->status) {
             return response()->json([
                 'success' => false,
                 'message' => __('messages.user_inactive'),

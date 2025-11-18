@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('ministry_branch_id')->nullable()->constrained('ministry_branches');
-            $table->foreignId('manager_id')->nullable()->constrained('employees');
             $table->string('position');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();

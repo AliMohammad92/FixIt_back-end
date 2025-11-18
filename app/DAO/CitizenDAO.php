@@ -2,13 +2,12 @@
 
 namespace App\DAO;
 
+use App\Models\Citizen;
+
 class CitizenDAO
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct()
+    public function findById($citizen_id)
     {
-        //
+        return Citizen::where('id', $citizen_id)->get();
     }
 }

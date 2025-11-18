@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MinistryRequest;
+use App\Http\Resources\GovernorateResource;
 use App\Http\Resources\MinistryResource;
+use App\Models\Governorate;
 use App\Models\Ministry;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -53,8 +55,9 @@ class MinistryController extends Controller
     public function getGovernorates()
     {
         $governorates = Cache::rememberForever('governorates_all', function () {
-            return DB::table('governorates')->get();
+            return Governorate::all();
         });
+        $governorates = GovernorateResource::collection($governorates);
         return $this->successResponse($governorates, __('messages.governorates_retrieved'), 200);
     }
 }

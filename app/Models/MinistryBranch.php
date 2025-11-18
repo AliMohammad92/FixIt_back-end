@@ -8,7 +8,6 @@ class MinistryBranch extends Model
 {
     protected $fillable = [
         'ministry_id',
-        'name',
         'governorate_id',
         'manager_id',
     ];
@@ -21,5 +20,16 @@ class MinistryBranch extends Model
     public function manager()
     {
         return $this->belongsTo(Employee::class, 'manager_id');
+    }
+
+    public function translations()
+    {
+        return $this->hasMany(MinistryBranchTranslation::class);
+    }
+
+    public function translation($locale)
+    {
+        $locale = $locale ?: app()->getLocale();
+        return $this->translations->where('locale', $locale)->first();
     }
 }

@@ -16,6 +16,7 @@ class EmployeeService
     {
         $this->dao = new EmployeeDAO();
     }
+
     public function add($user, OTPService $otpService)
     {
         $user->assignRole('employee');

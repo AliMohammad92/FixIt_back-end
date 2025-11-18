@@ -13,7 +13,6 @@ class Employee extends Model
         'ministry_branch_id',
         'end_date',
         'promoted_at',
-        'manager_id',
     ];
 
     public function user()
@@ -24,10 +23,5 @@ class Employee extends Model
     public function branch()
     {
         return $this->belongsTo(MinistryBranch::class);
-    }
-
-    public function manager()
-    {
-        return $this->belongsTo(Employee::class, 'manager_id');
     }
 }

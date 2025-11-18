@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ministries', function (Blueprint $table) {
+        Schema::create('governorate_translations', function (Blueprint $table) {
             $table->id();
-            $table->string('abbreviation')->unique();
-            $table->boolean('status')->default(true);
+            $table->foreignId('governorate_id')->constrained('governorates')->onDelete('cascade');
+            $table->string('locale');
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ministries');
+        Schema::dropIfExists('governorate_translations');
     }
 };
