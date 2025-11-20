@@ -47,17 +47,20 @@ class MinistryController extends Controller
     {
         $ministry = $this->service->readOne($id);
 
-        if (!$ministry) {
+        if (!$ministry)
             return $this->errorResponse(__('messages.ministry_not_found'), 404);
-        }
 
         return $this->successResponse(new MinistryResource($ministry), __('messages.ministry_retrieved'), 200);
     }
 
-    public function setManager($id, $manager_id)
+    public function assignManager($id, $manager_id)
     {
-        $ministry = $this->service->setManager($id, $manager_id);
-        return $this->successResponse(new MinistryResource($ministry), __('messages.employee_promoted'), 200);
+        $ministry = $this->service->assignManager($id, $manager_id);
+
+        if ($ministry)
+            return $this->successResponse(new MinistryResource($ministry), __('messages.ministry_manager_assigned_success'), 200);
+
+        return $this->errorResponse(__('messages.ministry_manager_assignment_failed'));
     }
 
     public function getGovernorates()

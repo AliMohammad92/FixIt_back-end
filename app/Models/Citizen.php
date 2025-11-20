@@ -16,4 +16,9 @@ class Citizen extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function image()
+    {
+        return $this->morphOne(Media::class, 'mediable')->where('type', 'img');
+    }
 }

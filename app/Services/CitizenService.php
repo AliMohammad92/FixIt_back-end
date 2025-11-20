@@ -45,6 +45,9 @@ class MinistryService
     public function assignManager($id, $manager_id)
     {
         $emp = (new EmployeeService())->readOne($manager_id);
+        $user = $emp->user;
+        $user->syncRoles(['employee', 'ministry_manager']);
+
         if ($id != $emp->ministry_id)
             return false;
 

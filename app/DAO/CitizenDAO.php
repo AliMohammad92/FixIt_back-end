@@ -10,4 +10,6 @@ class CitizenDAO
     {
         return Citizen::where('id', $citizen_id)->get();
     }
+
+    public function completeInfo(array $data) {}
 }

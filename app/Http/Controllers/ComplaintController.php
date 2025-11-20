@@ -23,12 +23,11 @@ class ComplaintController extends Controller
 {
     use ResponseTrait;
 
-    protected $complaintDAO, $citizenDAO;
+    protected $service;
 
     public function __construct()
     {
-        $this->complaintDAO = new ComplaintDAO();
-        $this->citizenDAO = new CitizenDAO();
+        $this->service = new ComplaintService();
     }
 
     public function submit(SubmitComplaintRequest $request, ComplaintService $complaintService)
@@ -43,56 +42,83 @@ class ComplaintController extends Controller
         );
     }
 
-    public function getComplaints($ministry_branch_id)
+    public function read()
     {
-        $user = User::findOrFail(Auth::id());
-        if (!$user->hasRole('super_admin') || !($user->hasRole('employee') && $user->employee->ministry_branch_id == $ministry_branch_id)) {
-            return $this->errorResponse(
-                __('messages.unauthorized'),
-                403
-            );
+        $complaints = $this->service->read();
+        if ($complaints->isEmpty()) {
+            return $this->errorResponse(__('messages.empty'), 404);
         }
-
-        $complaints = $this->complaintDAO->getComplaints($ministry_branch_id);
-        $complaints = ComplaintResource::collection($complaints);
-        return $this->successResponse(
-            ['complaints' => $complaints],
-            __('messages.complaints_retrieved')
-        );
+        return $this->successResponse(ComplaintResource::collection($complaints), __('messages.complaints_retrieved'));
     }
 
-    public function getMyComplaints(ComplaintService $complaintService)
+    public function getMyComplaints()
     {
         $user = Auth::user();
         $citizen_id = $user->citizen->id;
 
-        $complaints = $complaintService->getMyComplaints($citizen_id);
+        $complaints = $this->service->getMyComplaints($citizen_id);
 
         return $this->successResponse(
-            ['complaints' => $complaints],
+            ['complaints' => ComplaintResource::collection($complaints)],
             __('messages.complaints_retrieved')
         );
     }
 
-    public function getComplaint($complaint_id)
+    public function getByMinistry($id)
     {
-        $complaint = $this->complaintDAO->findById($complaint_id);
+        $user = Auth::user();
+        $complaints = $this->service->getByMinistry($id, $user);
+        if ($complaints->isEmpty()) {
+            return $this->errorResponse(__('messages.empty'), 404);
+        }
+
+        return $this->successResponse(ComplaintResource::collection($complaints), __('messages.complaints_retrieved'));
+    }
+
+    public function getByBranch($id)
+    {
+        $user = Auth::user();
+        $complaints = $this->service->getByBranch($id, $user);
+        if ($complaints->isEmpty()) {
+            return $this->errorResponse(__('messages.empty'), 404);
+        }
+
+        return $this->successResponse(ComplaintResource::collection($complaints), __('messages.complaints_retrieved'));
+    }
+
+    public function readOne($id)
+    {
+        $complaint = $this->service->readOne($id);
         if (!$complaint) {
             return $this->errorResponse(
-                [],
                 __('messages.complaint_not_found'),
                 404
             );
         }
-        $cacheKey = 'complaint_' . $complaint_id;
-
-        $complaint = Cache::remember($cacheKey, 3600, function () use ($complaint_id) {
-            return Complaint::find($complaint_id);
-        });
-        $complaint = new ComplaintResource($complaint);
         return $this->successResponse(
-            ['complaint' => $complaint],
+            new ComplaintResource($complaint),
             __('messages.complaint_retrieved'),
         );
     }
+    // public function readComplaint($complaint_id)
+    // {
+    //     $complaint = $this->service->findById($complaint_id);
+    //     if (!$complaint) {
+    //         return $this->errorResponse(
+    //             [],
+    //             __('messages.complaint_not_found'),
+    //             404
+    //         );
+    //     }
+    //     $cacheKey = 'complaint_' . $complaint_id;
+
+    //     $complaint = Cache::remember($cacheKey, 3600, function () use ($complaint_id) {
+    //         return Complaint::find($complaint_id);
+    //     });
+    //     $complaint = new ComplaintResource($complaint);
+    //     return $this->successResponse(
+    //         ['complaint' => $complaint],
+    //         __('messages.complaint_retrieved'),
+    //     );
+    // }
 }

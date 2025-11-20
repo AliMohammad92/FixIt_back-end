@@ -41,10 +41,10 @@ class MinistryBranchService
         return $branch;
     }
 
-    public function setManager($id, $manager_id)
+    public function assignManager($id, $manager_id)
     {
         Cache::forget("Branch {$id}");
-        $ministry = $this->dao->setManager($id, $manager_id);
+        $ministry = $this->dao->assignManager($id, $manager_id);
 
         return $ministry;
     }

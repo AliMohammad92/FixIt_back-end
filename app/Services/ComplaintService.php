@@ -62,11 +62,66 @@ class ComplaintService
         });
     }
 
-    public function getComplaints($ministry_branch_id)
+    public function read()
     {
+        $cacheKey = 'all_complaints';
+        return Cache::remember($cacheKey, 3600, function () {
+            return $this->dao->read();
+        });
+    }
+
+    public function getByBranch($ministry_branch_id, $user)
+    {
+        $isAuthorized =
+            $user->hasRole('super_admin') ||
+            (
+                $user->hasRole('employee') &&
+                $user->employee->ministry_branch_id == $ministry_branch_id
+            );
+
+        if (!$isAuthorized) {
+            return false;
+        }
+
         $cacheKey = 'ministry_branch_complaints_' . $ministry_branch_id;
         return Cache::remember($cacheKey, 3600, function () use ($ministry_branch_id) {
-            return $this->dao->getComplaints($ministry_branch_id);
+            return $this->dao->getByBranch($ministry_branch_id);
+        });
+    }
+
+    public function getByMinistry($ministry_id, $user)
+    {
+        $isAuthorized =
+            $user->hasRole('super_admin') ||
+            (
+                $user->hasRole('ministry_manager') &&
+                $user->employee->ministry_id == $ministry_id
+            );
+
+        if (!$isAuthorized) {
+            return false;
+        }
+        $cacheKey = "ministry_complaints_{$ministry_id}";
+
+        return Cache::remember($cacheKey, 3600, function () use ($ministry_id) {
+            $ministryService = app(MinistryService::class);
+            $ministry = $ministryService->readOne($ministry_id);
+
+            if (!$ministry) {
+                return collect();
+            }
+
+            $branchIds = $ministry->branches->pluck('id');
+
+            return $this->dao->getByMinistry($branchIds);
+        });
+    }
+
+    public function readOne($id)
+    {
+        $cacheKey = "complaint {$id}";
+        return Cache::remember($cacheKey, 3600, function () use ($id) {
+            return $this->dao->readOne($id);
         });
     }
 }

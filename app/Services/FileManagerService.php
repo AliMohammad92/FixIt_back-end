@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Requests\BaseUserRequest;
+use App\Models\Citizen;
 use App\Models\Complaint;
 use App\Models\User;
 use App\Models\UserOTP;
@@ -28,6 +29,16 @@ class FileManagerService
                 'type' => $this->detectFileType($file),
             ]);
         }
+    }
+
+    public function storeImg($img, $citizen)
+    {
+        $folder = sprintf('citizen/%s', $citizen->id);
+        $fileName = $img->getClientOriginalName();
+        $citizen->image()->create([
+            'path' => "$folder/$fileName",
+            'type' => "img"
+        ]);
     }
 
     protected function detectFileType($file)

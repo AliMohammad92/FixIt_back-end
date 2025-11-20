@@ -14,6 +14,7 @@ return [
     'invalid_credentials'           => 'Invalid email or password.',
     'unauthorized'                  => 'You are not authorized to perform this action.',
     'login_success'                 => 'Login successful! Welcome aboard.',
+    'logout_success'                => 'Logout successful! See you later.',
     'otp_sent'                      => 'OTP has been sent to your email. Please check it.',
     'otp_send_failed'               => 'Failed to send OTP. Please try again later.',
     'otp_verified'                  => 'OTP verified successfully.',
@@ -30,11 +31,19 @@ return [
     'ministry_not_found'            => 'Ministry not found.',
     'governorates_retrieved'        => 'Governorates retrieved successfully.',
 
+    'ministry_manager_assigned_success' => 'The employee has been successfully assigned as the ministry manager.',
+    'ministry_manager_assignment_failed' => 'This employee cannot be assigned because they do not belong to this ministry.',
+
+    'branch_manager_assigned_success' => 'The employee has been successfully assigned as the branch manager.',
+    'branch_manager_assignment_failed' => 'This employee cannot be assigned because they do not belong to this branch.',
+
+
     'employee_stored'               => 'Employee has been stored successfully. An OTP has been sent to their email.',
     'employee_retrieved'            => 'Employee data retrieved successfully.',
     'employees_retrieved'           => 'Employees data retrieved successfully.',
     'employee_promoted'             => 'Employee has been promoted successfully.',
     'unauthorized_promotion'        => 'You are not authorized to promote to the specified position.',
+
 
     'token_refreshed'               => 'Token has been refreshed successfully.',
     'invalid_refresh_token'         => 'Invalid refresh token.',

@@ -35,7 +35,7 @@ class UserController extends Controller
             return $this->errorResponse(__('messages.invalid_credentials'), 401);
         }
 
-        return $this->successResponse($result, __('messages.login_success'), 200);
+        return $this->successResponse($result, __('messages.logout_success'), 200);
     }
 
     public function refreshToken(Request $request, AuthService $authService)
@@ -50,5 +50,12 @@ class UserController extends Controller
         }
 
         return $this->successResponse($result, __('messages.token_refreshed'), 200);
+    }
+
+    public function logout()
+    {
+        $user = Auth::user();
+        $user->currentAccessToken()->delete();
+        return $this->successResponse([], __('messages.logout'));
     }
 }

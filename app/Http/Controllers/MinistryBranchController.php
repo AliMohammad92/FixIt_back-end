@@ -53,9 +53,9 @@ class MinistryBranchController extends Controller
         return $this->successResponse($data, __('messages.ministry_branches_retrieved'));
     }
 
-    public function setManager($id, $manager_id)
+    public function assignManager($id, $manager_id)
     {
-        $branch = $this->service->setManager($id, $manager_id);
+        $branch = $this->service->assignManager($id, $manager_id);
         return $this->successResponse(MinistryBranchResource::collection($branch), __('messages.employee_promoted'), 200);
     }
 }
