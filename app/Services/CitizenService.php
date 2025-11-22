@@ -40,7 +40,7 @@ class CitizenService
             app(FileManagerService::class)->storeFile(
                 $citizen,
                 $data['img'],
-                "citizen/{$citizen->id}",
+                "citizens",
                 'image',
                 fn() => 'img'
             );

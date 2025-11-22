@@ -29,6 +29,7 @@ Route::prefix('complaint')
         Route::get('/{complaint_id}', 'readOne')->middleware('permission:complaint.review');
 
         Route::post('updateStatus/{id}', 'updateStatus')->middleware('permission:complaint.resolve');
+        Route::post('addReply', 'addReply');
     });
 
 Route::get('get-governorates', [MinistryController::class, 'getGovernorates'])->middleware(['auth:sanctum', 'active.user']);
