@@ -73,6 +73,7 @@ class ComplaintController extends Controller
         if (!$complaints) {
             return $this->errorResponse(__('messages.unauthorized'), 401);
         }
+
         if ($complaints->isEmpty()) {
             return $this->successResponse([], __('messages.empty'));
         }
@@ -104,6 +105,7 @@ class ComplaintController extends Controller
                 404
             );
         }
+
         return $this->successResponse(
             new ComplaintResource($complaint),
             __('messages.complaint_retrieved'),

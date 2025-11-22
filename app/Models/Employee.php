@@ -37,6 +37,7 @@ class Employee extends Model
 
     public function canAccessComplaint($complaint)
     {
-        return ($this->ministry_branch_id === $complaint->ministry_branch_id) || ($this->user->hasRole('ministry_manager'));
+        return ($this->ministry_branch_id === $complaint->ministry_branch_id)
+            || ($this->user && $this->user->hasAnyRole(['super_admin', 'ministry_manager']));
     }
 }

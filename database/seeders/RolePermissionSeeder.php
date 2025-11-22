@@ -30,19 +30,20 @@ class RolePermissionSeeder extends Seeder
             'branch.read',
             'branch.update',
             'employee.read',
+            'complaint.read',
+            'complaint.process',
         ]);
 
         $branch_manager->syncPermissions([
             'branch.read',
             'branch.update',
             'employee.read',
+            'complaint.read',
+            'complaint.process',
         ]);
 
         $citizen->syncPermissions([
             'complaint.create',
-            'complaint.read',
-            'complaint.update',
-            'complaint.delete',
         ]);
 
         $employee->syncPermissions([

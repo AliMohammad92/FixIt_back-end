@@ -26,7 +26,7 @@ Route::prefix('complaint')
         Route::post('submit', 'submit');
         Route::get('my', 'getMyComplaints');
         Route::get('/', 'read')->middleware('permission:complaint.read');
-        Route::get('/{complaint_id}', 'readOne')->middleware('permission:complaint.review');
+        Route::get('/{complaint_id}', 'readOne')->middleware('permission:complaint.process');
 
         Route::post('startProcessing/{id}/{emp_id}', 'startProcessing')->middleware(['permission:complaint.process', 'check.employee.access']);
         Route::post('updateStatus/{id}', 'updateStatus')->middleware(['permission:complaint.process', 'check.employee.access']);
@@ -47,7 +47,7 @@ Route::prefix('ministry')
         });
 
         Route::get('{ministry_id}/complaints', [ComplaintController::class, 'getByMinistry'])
-            ->middleware('permission:complaint.read');
+            ->middleware(['permission:complaint.read']);
 
         Route::prefix('branch')->controller(MinistryBranchController::class)->group(function () {
             Route::post('store', 'store')->middleware('role:super_admin');
