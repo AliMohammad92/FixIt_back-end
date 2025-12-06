@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             GovernorateSeeder::class,
             MinistrySeeder::class,
             MinistryBranchSeeder::class,
-            CitizenSeeder::class,
+            // CitizenSeeder::class,
         ]);
     }
 }

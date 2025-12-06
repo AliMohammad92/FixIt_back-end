@@ -19,6 +19,14 @@ WORKDIR /var/www/html
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
+# Run migrations and seeders automatically
+RUN php artisan migrate --force \
+    && php artisan db:seed --force \
+    && php artisan storage:link \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
