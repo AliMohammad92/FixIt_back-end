@@ -1,15 +1,15 @@
-# Use the official PHP image with required extensions
+# Use official PHP with Apache
 FROM php:8.3-apache
 
-# Install system dependencies and PHP extensions
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     git zip unzip libpq-dev libonig-dev libzip-dev \
     && docker-php-ext-install pdo pdo_pgsql mbstring zip exif pcntl bcmath
 
-# Enable Apache mod_rewrite
+# Enable mod_rewrite
 RUN a2enmod rewrite
 
-# Copy project files to the container
+# Copy project files
 COPY . /var/www/html
 
 # Set working directory
@@ -17,18 +17,18 @@ WORKDIR /var/www/html
 
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
-
-# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set correct permissions for Laravel
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Set environment variable for port
-ENV PORT=80
+# **Fix Apache DocumentRoot**
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
+    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Expose the port Render will use
+# Expose port 80
 EXPOSE 80
 
-# Start Laravel server through Apache
+# Start Apache
 CMD ["apache2-foreground"]
