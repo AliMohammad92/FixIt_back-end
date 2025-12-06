@@ -11,7 +11,7 @@ class CitizenResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            // 'basic_info' => new UserResource($this->user),
+            'basic_info' => new UserResource($this->user),
             'national_id' => $this->national_id,
             'nationality' => $this->nationality,
             'created_at' => $this->created_at->format('Y-m-d H:i A'),
