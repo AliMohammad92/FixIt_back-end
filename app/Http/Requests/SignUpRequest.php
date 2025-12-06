@@ -14,7 +14,9 @@ class SignUpRequest extends BaseUserRequest
     public function rules(): array
     {
         return array_merge($this->commonRules(), [
-            'password' => 'required|string|min:8|confirmed',
+            'password'      => 'required|string|min:8|confirmed',
+            'nationality'   => 'required|string',
+            'national_id'   => 'required|string'
         ]);
     }
 }

@@ -8,8 +8,10 @@ return [
     'empty'                         => 'No results found.',
     'not_found'                     => 'No matching data found.',
     'true'                          => 'True.',
+    'deleted_successfully'          => 'Deleted successfully',
     'user_created'                  => 'User has been created successfully.',
     'user_deleted'                  => 'User has been deleted.',
+    'user_info_updated'             => 'User info has been updated successfully',
     'user_inactive'                 => 'Your account is not activated yet. Please check your email or enter the OTP code.',
     'invalid_credentials'           => 'Invalid email or password.',
     'unauthorized'                  => 'You are not authorized to perform this action.',
@@ -55,6 +57,7 @@ return [
     'complaints_retrieved'          => 'Complaints data retrieved successfully.',
     'complaint_not_found'           => 'Complaint not found.',
     'complaint_locked_by_other'     => 'This complaint is being processed by another employee.',
+    'complaint_already_locked'      => 'You have already taken this complaint for processing.',
     'complaint_started_processing'  => 'Processing of this complaint has started.',
 
     'citizens_retrieved'            => 'Citizens data retrieved successfully.',
@@ -64,5 +67,10 @@ return [
 
     'complaint_resolved'            => 'The complaint has been resolved successfully.',
     'complaint_rejected'            => 'The complaint has been rejected and the reason has been documented.',
-    'complaint_status_updated'      => 'The complaint status has been updated successfully.'
+    'complaint_status_updated'      => 'The complaint status has been updated successfully.',
+
+    'reply_sent'                    => 'Reply sent successfully.',
+    'reply_failed'                  => 'Failed to send reply, please try again.',
+    'replies_retrieved'             => 'Replies data retrieved successfully',
+    'reply_not_found'               => 'Reply not found.',
 ];

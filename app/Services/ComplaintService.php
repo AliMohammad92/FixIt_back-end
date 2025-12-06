@@ -4,33 +4,39 @@ namespace App\Services;
 
 use App\DAO\ComplaintDAO;
 use App\DAO\GovernorateDAO;
-use App\Http\Resources\ComplaintResource;
-use App\Models\Complaint;
+use App\DAO\UserDAO;;
+
 use App\Models\Employee;
-use App\Models\Governorate;
-use App\Models\MinistryBranch;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ComplaintService
 {
-    protected $dao;
+    protected $complaintDAO, $fileService, $cacheManager, $ministryBranchService, $replyService;
 
-    public function __construct()
-    {
-        $this->dao = new ComplaintDAO();
+    public function __construct(
+        ComplaintDAO $complaintDAO,
+        FileManagerService $fileService,
+        CacheManagerService $cacheManager,
+        MinistryBranchService $ministryBranchService,
+        ReplyService $replyService
+    ) {
+        $this->complaintDAO = $complaintDAO;
+        $this->fileService = $fileService;
+        $this->cacheManager = $cacheManager;
+        $this->ministryBranchService = $ministryBranchService;
+        $this->replyService = $replyService;
     }
 
-    public function submitComplaint(array $data, FileManagerService $fileManagerService)
+    public function submitComplaint(array $data)
     {
         $media = $data['media'] ?? null;
         unset($data['media'], $data['locked_by'], $data['locked_at']);
 
         $data['citizen_id'] = Auth::user()->citizen->id;
 
-        $ministryBranch = app(MinistryBranchService::class)->readOne($data['ministry_branch_id']);
+        $ministryBranch = $this->ministryBranchService->readOne($data['ministry_branch_id']);
         $ministryAbbr = $ministryBranch->ministry->abbreviation;
 
         $governorateCode = app(GovernorateDAO::class)->readOne($data['governorate_id'])->code;
@@ -42,9 +48,10 @@ class ComplaintService
             Str::random(8)
         );
 
-        $complaint = $this->dao->submit($data);
+        $complaint = $this->complaintDAO->submit($data);
 
-        $fileManagerService->storeFile(
+        $this->cacheManager->clearComplaintCache($data['citizen_id']);
+        $this->fileService->storeFile(
             $complaint,
             $media,
             folderPath: sprintf(
@@ -55,24 +62,25 @@ class ComplaintService
                 $data['reference_number']
             ),
             relationName: 'media',
-            typeResolver: fn($file) => $fileManagerService->detectFileType($file)
+            typeResolver: fn($file) => $this->fileService->detectFileType($file)
         );
         return $complaint;
     }
 
     public function getMyComplaints($citizen_id)
     {
-        $cacheKey = 'citizen_complaints_' . $citizen_id;
+        $cacheKey = "complaints:citizen:{$citizen_id}";
+
         return Cache::remember($cacheKey, 3600, function () use ($citizen_id) {
-            return $this->dao->getMyComplaints($citizen_id);
+            return $this->complaintDAO->getMyComplaints($citizen_id);
         });
     }
 
     public function read()
     {
-        $cacheKey = 'all_complaints';
+        $cacheKey = 'complaints';
         return Cache::remember($cacheKey, 3600, function () {
-            return $this->dao->read();
+            return $this->complaintDAO->read();
         });
     }
 
@@ -89,9 +97,10 @@ class ComplaintService
             return false;
         }
 
-        $cacheKey = 'ministry_branch_complaints_' . $ministry_branch_id;
+        $cacheKey = "complaints:branch:{$ministry_branch_id}";
+
         return Cache::remember($cacheKey, 3600, function () use ($ministry_branch_id) {
-            return $this->dao->getByBranch($ministry_branch_id);
+            return $this->complaintDAO->getByBranch($ministry_branch_id);
         });
     }
 
@@ -107,7 +116,8 @@ class ComplaintService
         if (!$isAuthorized) {
             return false;
         }
-        $cacheKey = "ministry_complaints_{$ministry_id}";
+
+        $cacheKey = "complaints:ministry:{$ministry_id}";
 
         return Cache::remember($cacheKey, 3600, function () use ($ministry_id) {
             $ministryService = app(MinistryService::class);
@@ -119,21 +129,21 @@ class ComplaintService
 
             $branchIds = $ministry->branches->pluck('id');
 
-            return $this->dao->getByMinistry($branchIds);
+            return $this->complaintDAO->getByMinistry($branchIds);
         });
     }
 
     public function readOne($id)
     {
-        $cacheKey = "complaint {$id}";
+        $cacheKey = "complaint:single:{$id}";
         return Cache::remember($cacheKey, 3600, function () use ($id) {
-            return $this->dao->readOne($id);
+            return $this->complaintDAO->readOne($id);
         });
     }
 
     public function updateStatus($id, $status, $reason = "", $user_id)
     {
-        $complaint = $this->dao->readOne($id);
+        $complaint = $this->complaintDAO->readOne($id);
         $employee = Employee::where('user_id', $user_id)->first();
         $lockExpired = $complaint->locked_at <= now()->subMinutes(15);
         $lockedByOther = $complaint->locked_by && $complaint->locked_by != $employee->id;
@@ -142,20 +152,21 @@ class ComplaintService
             return false;
         }
 
-        $complaint = $this->dao->updateStatus($id, $status);
+        $complaint = $this->complaintDAO->updateStatus($id, $status);
 
         $message = $status === 'resolved'
             ? __('messages.complaint_resolved')
             : __('messages.complaint_rejected') . $reason;
 
-        $this->dao->addReply($complaint->id, $employee, $message);
+        $this->replyService->addReply($complaint->id, $employee, $message);
         return true;
     }
 
-    public function startProcessing($id, $emp_id)
+    public function startProcessing($id, $user_id)
     {
-        $complaint = $this->dao->readOne($id);
-        $employee = app(EmployeeService::class)->readOne($emp_id);
+        $complaint = $this->complaintDAO->readOne($id);
+        $user = app(UserDAO::class)->findById($user_id);
+        $employee = $user->employee;
         if (!$employee) {
             return [
                 'status' => false,
@@ -164,7 +175,7 @@ class ComplaintService
         }
 
         $lockExpired = $complaint->locked_at <= now()->subMinutes(15);
-        $lockedByOther = $complaint->locked_by && $complaint->locked_by != $emp_id;
+        $lockedByOther = $complaint->locked_by && $complaint->locked_by != $employee->id;
         $sameBranch = $complaint->ministry_branch_id === $employee->ministry_branch_id;
 
 
@@ -182,7 +193,14 @@ class ComplaintService
             ];
         }
 
-        $this->dao->lock($complaint, $emp_id);
+        if (!$lockedByOther && !$lockExpired) {
+            return [
+                'status' => false,
+                'reason' => 'complaint_already_locked'
+            ];
+        }
+
+        $this->complaintDAO->lock($complaint, $employee->id);
 
         if ($complaint->status !== 'in_progress')
             $complaint->update(['status' => 'in_progress']);
@@ -190,8 +208,12 @@ class ComplaintService
         return ['status' => true];
     }
 
-    public function addReply($id, $data)
+    public function delete($id)
     {
-        $complaint = $this->dao->readOne($id);
+        $complaint = $this->complaintDAO->readOne($id);
+        if (!$complaint) {
+            return false;
+        }
+        return $this->complaintDAO->delete($complaint);
     }
 }

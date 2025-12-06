@@ -11,12 +11,14 @@ class UserResource extends JsonResource
     {
         $type = "";
         $id = "";
+        $data = "";
         if ($this->citizen) {
             $type = 'citizen_id';
             $id = $this->citizen->id;
         } else if ($this->employee) {
             $type = 'employee_id';
             $id = $this->employee->id;
+            $data = new EmployeeResource($this->employee);
         }
         return [
             'id'         => $this->id,
@@ -27,7 +29,8 @@ class UserResource extends JsonResource
             'role'       => $this->role,
             'address'    => $this->address,
             'created_at' => $this->created_at->format('Y-m-d H:i A'),
-            "$type"        => $id
+            "$type"      => $id,
+            "more_info"  => $data
         ];
     }
 }

@@ -15,6 +15,7 @@ class Complaint extends Model
         'city_name',
         'street_name',
         'citizen_id',
+        'ministry_id',
         'ministry_branch_id',
         'locked_by',
         'locked_at'
@@ -31,6 +32,11 @@ class Complaint extends Model
         return $this->belongsTo(Citizen::class);
     }
 
+    public function ministry()
+    {
+        return $this->belongsTo(Ministry::class);
+    }
+
     public function ministryBranch()
     {
         return $this->belongsTo(MinistryBranch::class);
@@ -44,5 +50,10 @@ class Complaint extends Model
     public function replies()
     {
         return $this->hasMany(Reply::class);
+    }
+
+    public function governorate()
+    {
+        return $this->belongsTo(Governorate::class);
     }
 }

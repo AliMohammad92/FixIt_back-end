@@ -16,7 +16,8 @@ class SubmitComplaintRequest extends FormRequest
         return [
             'type'               => 'required|string|max:255',
             'description'        => 'required|string',
-            'ministry_branch_id' => 'required|exists:ministry_branches,id',
+            'ministry_id'        => 'required|exists:ministries,id',
+            'ministry_branch_id' => 'nullable|exists:ministry_branches,id',
             'governorate_id'     => 'required|exists:governorates,id',
             'city_name'          => 'nullable|string|max:255',
             'street_name'        => 'nullable|string|max:255',

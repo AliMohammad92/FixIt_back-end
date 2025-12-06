@@ -6,6 +6,7 @@ use App\Http\Requests\SignUpRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Services\UserService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,9 +15,16 @@ use Illuminate\Support\Facades\Redis;
 class UserController extends Controller
 {
     use ResponseTrait;
-    public function signUp(SignUpRequest $request, AuthService $authService)
+    protected $userService;
+
+    public function __construct(UserService $userService)
     {
-        $result = $authService->signUp($request->validated());
+        $this->userService = $userService;
+    }
+
+    public function signUp(SignUpRequest $request)
+    {
+        $result = $this->userService->signUp($request->validated());
         if ($result) {
             return $this->successResponse($result, __('messages.otp_sent'), 201);
         } else {
@@ -24,14 +32,14 @@ class UserController extends Controller
         }
     }
 
-    public function login(Request $request, AuthService $authService)
+    public function login(Request $request)
     {
         $request->validate([
             'login' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $result = $authService->login($request->only('login', 'password'));
+        $result = $this->userService->login($request->only('login', 'password'));
         if (!$result) {
             return $this->errorResponse(__('messages.invalid_credentials'), 401);
         }
@@ -39,13 +47,13 @@ class UserController extends Controller
         return $this->successResponse($result, __('messages.login_success'), 200);
     }
 
-    public function refreshToken(Request $request, AuthService $authService)
+    public function refreshToken(Request $request)
     {
         $request->validate([
             'refresh_token' => 'required|string',
         ]);
 
-        $result = $authService->refreshToken($request->input('refresh_token'));
+        $result = $this->userService->refreshToken($request->input('refresh_token'));
         if (!$result) {
             return $this->errorResponse(__('messages.invalid_refresh_token'), 401);
         }
@@ -58,5 +66,14 @@ class UserController extends Controller
         $user = Auth::user();
         $user->currentAccessToken()->delete();
         return $this->successResponse([], __('messages.logout_success'));
+    }
+
+    public function update(Request $request)
+    {
+        $user = $this->userService->update(Auth::id(), $request->all());
+        if (!$user)
+            return $this->errorResponse(__('messages.user_not_found'), 404);
+
+        return $this->successResponse($user, __('messages.user_info_updated'));
     }
 }

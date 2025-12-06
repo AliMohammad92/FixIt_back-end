@@ -14,9 +14,9 @@ class CitizenController extends Controller
     use ResponseTrait;
     protected CitizenService $service;
 
-    public function __construct()
+    public function __construct(CitizenService $citizenService)
     {
-        $this->service = new CitizenService();
+        $this->service = $citizenService;
     }
 
     public function completeInfo(Request $request)

@@ -6,6 +6,11 @@ use App\Models\Citizen;
 
 class CitizenDAO
 {
+    public function store($user, $data)
+    {
+        return $user->citizen()->create($data);
+    }
+
     public function read()
     {
         return Citizen::all();

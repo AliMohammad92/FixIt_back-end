@@ -8,7 +8,9 @@ return [
     'empty'                         => 'لا توجد نتائج.',
     'not_found'                     => 'لا توجد بيانات مطابقة لعملية البحث.',
     'true'                          => 'صحيح.',
+    'deleted_successfully'          => 'تم الحذف بنجاح.',
     'user_created'                  => 'تم إنشاء المستخدم بنجاح.',
+    'user_info_updated'             => 'تم تعديل المعلومات بنجاح.',
     'user_deleted'                  => 'تم حذف المستخدم.',
     'user_inactive'                 => 'حسابك غير مفعل بعد. يرجى التحقق من بريدك الإلكتروني أو إدخال رمز التحقق (OTP).',
     'invalid_credentials'           => 'البريد الالكتروني أو كلمة المرور غير صحيحة.',
@@ -30,7 +32,7 @@ return [
     'ministry_branches_retrieved'   => 'تم استرجاع بيانات فروع الوزارة بنجاح.',
     'ministry_not_found'            => 'الوزارة غير موجودة.',
     'governorates_retrieved'        => 'تم استرجاع المحافظات بنجاح.',
-    'ministry_branch_mismatch'        => 'الفرع المحدد لا يتبع للوزارة المختارة.',
+    'ministry_branch_mismatch'      => 'الفرع المحدد لا يتبع للوزارة المختارة.',
 
     'ministry_manager_assigned_success'  => 'تم تعيين الموظف كمسؤول عن الوزارة بنجاح.',
     'ministry_manager_assignment_failed' => 'لا يمكن تعيين هذا الموظف لأنه لا يتبع هذه الوزارة.',
@@ -53,6 +55,7 @@ return [
     'complaints_retrieved'          => 'تم استرجاع بيانات الشكاوى بنجاح.',
     'complaint_not_found'           => 'الشكوى غير موجودة.',
     'complaint_locked_by_other'     => 'هذه الشكوى قيد المعالجة من قبل موظف آخر.',
+    'complaint_already_locked'      => 'لقد استلمت هذه الشكوى بالفعل للمعالجة.',
     'complaint_started_processing'  => 'تم بدء معالجة هذه الشكوى.',
 
     'citizens_retrieved'            => 'تم استرجاع بيانات المواطنين بنجاح.',
@@ -63,4 +66,9 @@ return [
     'complaint_resolved'            => 'تم حل الشكوى بنجاح.',
     'complaint_rejected'            => 'تم رفض الشكوى وتوثيق السبب.',
     'complaint_status_updated'      => 'تم تحديث حالة الشكوى بنجاح.',
+
+    'reply_sent'                    => 'تم إرسال الرد بنجاح.',
+    'reply_failed'                  => 'فشل في إرسال الرد، حاول مرة أخرى.',
+    'replies_retrieved'             => 'تم استرجاع الردود الخاصة بالشكوى بنجاح.',
+    'reply_not_found'               => 'الرد غير موجود.',
 ];

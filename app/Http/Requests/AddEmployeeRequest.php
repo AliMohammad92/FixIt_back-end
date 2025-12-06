@@ -14,6 +14,7 @@ class AddEmployeeRequest extends BaseUserRequest
     public function rules(): array
     {
         return array_merge($this->commonRules(), [
+            'role'                 => 'required',
             'ministry_id'          => 'required|exists:ministries,id',
             'ministry_branch_id'   => 'nullable|exists:ministry_branches,id',
             'start_date'           => 'required|date',

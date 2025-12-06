@@ -37,7 +37,7 @@ class EmployeeService
                 ];
             }
         }
-
+        $dataUser['status'] = true;
         $user = $this->dao->store($data, $dataUser);
         $user->syncRoles($data['role']);
 

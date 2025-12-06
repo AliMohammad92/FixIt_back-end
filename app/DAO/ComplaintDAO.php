@@ -4,6 +4,7 @@ namespace App\DAO;
 
 use App\Models\Complaint;
 use App\Models\Employee;
+use App\Models\Reply;
 use App\Services\MinistryService;
 
 use function Symfony\Component\Clock\now;
@@ -65,11 +66,8 @@ class ComplaintDAO
         return $complaint;
     }
 
-    public function addReply($complaint_id, $employee, $message)
+    public function delete($complaint)
     {
-        return $employee->replies()->create([
-            'complaint_id' => $complaint_id,
-            'content'      => $message
-        ]);
+        return $complaint->delete();
     }
 }

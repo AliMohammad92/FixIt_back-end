@@ -2,26 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\DAO\CitizenDAO;
-use App\DAO\ComplaintDAO;
 use App\Http\Requests\SubmitComplaintRequest;
 use App\Http\Resources\ComplaintResource;
-use App\Models\Citizen;
-use App\Models\Complaint;
-use App\Models\Employee;
-use App\Models\MinistryBranch;
-use App\Models\User;
 use App\Services\ComplaintService;
-use App\Services\EmployeeService;
-use App\Services\FileManagerService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
-use function PHPUnit\Framework\isEmpty;
 
 class ComplaintController extends Controller
 {
@@ -29,15 +15,15 @@ class ComplaintController extends Controller
 
     protected $service;
 
-    public function __construct()
+    public function __construct(ComplaintService $complaintService)
     {
-        $this->service = new ComplaintService();
+        $this->service = $complaintService;
     }
 
-    public function submit(SubmitComplaintRequest $request, ComplaintService $complaintService)
+    public function submit(SubmitComplaintRequest $request)
     {
         $data = $request->validated();
-        $complaint = $complaintService->submitComplaint($data, new FileManagerService());
+        $complaint = $this->service->submitComplaint($data);
 
         return $this->successResponse(
             ['complaint' => new ComplaintResource($complaint)],
@@ -128,23 +114,23 @@ class ComplaintController extends Controller
         return $this->errorResponse(__('messages.complaint_locked_by_other'));
     }
 
-    public function addReply($id, Request $request)
+    public function startProcessing($id)
     {
-        $request->validate([
-            'content' => 'required|string|max:500'
-        ]);
-
-        $result = $this->service->addReply($id, $request->all());
-    }
-
-    public function startProcessing($id, $emp_id)
-    {
-        $result = $this->service->startProcessing($id, $emp_id);
+        $result = $this->service->startProcessing($id, Auth::id());
 
         if (!$result['status']) {
             return $this->errorResponse(__("messages.{$result['reason']}"), 401);
         }
 
         return $this->successResponse([], __('messages.complaint_started_processing'));
+    }
+
+    public function delete($id)
+    {
+        $result = $this->service->delete($id);
+        if (!$result) {
+            return $this->errorResponse(__('messages.not_found'), 404);
+        }
+        return $this->successResponse([], __('messages.deleted_successfully'));
     }
 }
