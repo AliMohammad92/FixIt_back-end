@@ -76,4 +76,36 @@ class UserController extends Controller
 
         return $this->successResponse($user, __('messages.user_info_updated'));
     }
+
+    public function uploadProfileImage(Request $request)
+    {
+        $request->validate([
+            'img' => 'required|file|mimes:jpg,jpeg,png'
+        ]);
+
+        $user = Auth::user();
+        $user = $this->userService->uploadProfileImage($request->file('img'), $user);
+
+        return $this->successResponse(
+            new UserResource($user),
+            __('messages.user_info_updated'),
+        );
+    }
+
+    public function deleteProfileImage()
+    {
+        $user = Auth::user();
+        $status = $this->userService->deleteProfileImage($user) ? true : false;
+
+        if ($status) {
+            return $this->successResponse(
+                new UserResource($user),
+                __('messages.deleted_successfully'),
+            );
+        } else {
+            return $this->errorResponse(
+                __('messages.img_not_found'),
+            );
+        }
+    }
 }

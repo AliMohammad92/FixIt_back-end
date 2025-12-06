@@ -19,23 +19,6 @@ class CitizenController extends Controller
         $this->service = $citizenService;
     }
 
-    public function completeInfo(Request $request)
-    {
-        $request->validate([
-            'national_id' => 'required|string|unique:citizens,national_id',
-            'nationality' => 'required|string',
-            'img'         => 'nullable|file|mimes:jpg,jpeg,png'
-        ]);
-
-        $user = User::find(Auth::id());
-        $citizen = $this->service->completeInfo($request->all(), $user->citizen);
-
-        return $this->successResponse(
-            new CitizenResource($citizen),
-            __('messages.citizen_updated'),
-        );
-    }
-
     public function read()
     {
         $citizens = $this->service->read();

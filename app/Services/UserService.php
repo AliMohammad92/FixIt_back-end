@@ -13,18 +13,22 @@ use Illuminate\Support\Str;
 
 class UserService
 {
-    protected $userDAO, $otpDAO, $refreshTokenDAO, $citizenDAO;
+    protected $userDAO, $otpDAO, $refreshTokenDAO, $citizenDAO, $citizenService, $fileManagerService;
 
     public function __construct(
         UserDAO $userDAO,
         UserOtpDAO $otpDAO,
         RefreshTokenDAO $refreshTokenDAO,
-        CitizenDAO $citizenDAO
+        CitizenDAO $citizenDAO,
+        CitizenService $citizenService,
+        FileManagerService $fileManagerService
     ) {
         $this->userDAO = $userDAO;
         $this->otpDAO = $otpDAO;
         $this->refreshTokenDAO = $refreshTokenDAO;
         $this->citizenDAO = $citizenDAO;
+        $this->citizenService = $citizenService;
+        $this->fileManagerService = $fileManagerService;
     }
 
     public function signUp(array $data)
@@ -40,13 +44,16 @@ class UserService
 
             $otp = rand(100000, 999999);
             $expiresAt = now()->addMinutes(5);
+            $img = $data['img'];
 
-            unset($data['national_id'], $data['nationality']);
+            unset($data['national_id'], $data['nationality'], $data['img']);
 
             $this->otpDAO->store($user->id, $otp, $expiresAt);
 
             $user->assignRole('citizen');
             $this->citizenDAO->store($user, $citizenData);
+
+            $this->uploadProfileImage($img, $user);
 
             // Mail::to($user->email)->send(new OtpMail($otp)); // Assuming OtpMail is a Mailable class
             return [
@@ -132,6 +139,42 @@ class UserService
         if (!$user) {
             return false;
         }
+
+        if (!empty($data['img']))
+            $this->updateProfileImage($data['img'], $user);
+
         return $this->userDAO->update($user, $data);
+    }
+
+    public function deleteProfileImage($user)
+    {
+        if (!$user->image) {
+            return false;
+        }
+
+        return $this->fileManagerService->deleteFile($user, $user->image->id, 'image');
+    }
+
+    public function uploadProfileImage($img, $user)
+    {
+        if (isset($img)) {
+            $this->fileManagerService->storeFile(
+                $user,
+                $img,
+                "users/profileImages",
+                'image',
+                fn() => 'img'
+            );
+        }
+        return $user;
+    }
+
+    public function updateProfileImage($img, $user)
+    {
+        $status = $this->deleteProfileImage($user);
+        if ($status) {
+            $user->image()->delete();
+        }
+        return $this->uploadProfileImage($img, $user) ? true : false;
     }
 }

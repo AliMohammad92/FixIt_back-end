@@ -10,11 +10,16 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserOTPController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('sign-up', [UserController::class, 'signUp']);
-Route::post('login', [UserController::class, 'login']);
-Route::post('refresh-token', [UserController::class, 'refreshToken']);
-Route::post('logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
-Route::put('updateInfo', [UserController::class, 'update'])->middleware('auth:sanctum');
+Route::controller(UserController::class)->group(function () {
+    Route::post('sign-up', 'signUp');
+    Route::post('login', 'login');
+    Route::post('refresh-token', 'refreshToken');
+    Route::post('logout', 'logout')->middleware('auth:sanctum');
+    Route::post('updateInfo', 'update')->middleware('auth:sanctum');
+
+    Route::post('upload-profile-img', 'uploadProfileImage')->middleware('auth:sanctum');
+    Route::delete('delete-profile-img', 'deleteProfileImage')->middleware('auth:sanctum');
+});
 
 Route::post('verify-otp', [UserOTPController::class, 'verifyOtp']);
 Route::post('resend-otp', [UserOTPController::class, 'resendOtp']);
@@ -79,7 +84,6 @@ Route::prefix('employee')->middleware(['auth:sanctum', 'active.user'])->controll
 });
 
 Route::prefix('citizen')->middleware(['auth:sanctum', 'active.user'])->controller(CitizenController::class)->group(function () {
-    Route::post('complete-info', 'completeInfo');
     Route::get('read', 'read');
     Route::get('read/{id}', 'readOne');
     Route::get('myAccount', 'myAccount');

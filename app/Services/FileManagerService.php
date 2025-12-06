@@ -8,6 +8,7 @@ use App\Models\Complaint;
 use App\Models\User;
 use App\Models\UserOTP;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class FileManagerService
 {
@@ -23,6 +24,22 @@ class FileManagerService
                 'type' => $typeResolver ? $typeResolver($file) : 'file'
             ]);
         }
+    }
+
+    public function deleteFile($model, $fileId, $relationName = 'media')
+    {
+        $fileRecord = $model->{$relationName}()->find($fileId);
+        if (!$fileRecord) {
+            return false;
+        }
+
+        if (Storage::disk('public')->exists($fileRecord->path)) {
+            Storage::disk('public')->delete($fileRecord->path);
+        }
+
+        $fileRecord->delete();
+
+        return true;
     }
 
     public function detectFileType($file)

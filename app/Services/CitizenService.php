@@ -9,18 +9,21 @@ use Illuminate\Support\Facades\Cache;
 
 class CitizenService
 {
-    protected $dao;
+    protected $citizenDAO, $fileManagerService;
 
-    public function __construct()
-    {
-        $this->dao = new CitizenDAO();
+    public function __construct(
+        CitizenDAO $citizenDAO,
+        FileManagerService $fileManagerService
+    ) {
+        $this->citizenDAO = $citizenDAO;
+        $this->fileManagerService = $fileManagerService;
     }
 
     public function read()
     {
-        $cacheKey = "citizenn";
+        $cacheKey = "citizens";
         return Cache::remember($cacheKey, 1800, function () {
-            return $this->dao->read();
+            return $this->citizenDAO->read();
         });
     }
 
@@ -28,24 +31,38 @@ class CitizenService
     {
         $cacheKey = "citizen {$id}";
         return Cache::remember($cacheKey, 1800, function () use ($id) {
-            return $this->dao->findById($id);
+            return $this->citizenDAO->findById($id);
         });
     }
 
-    public function completeInfo($data, $citizen)
+    public function uploadProfileImage($img, $citizen)
     {
-        $this->dao->completeInfo($citizen->id, $data);
-
-        if (isset($data['img'])) {
-            app(FileManagerService::class)->storeFile(
+        if (isset($img)) {
+            $this->fileManagerService->storeFile(
                 $citizen,
-                $data['img'],
+                $img,
                 "citizens",
                 'image',
                 fn() => 'img'
             );
         }
-
         return $citizen;
+    }
+
+    public function deleteProfileImage($citizen)
+    {
+        if (!$citizen->image) {
+            return false;
+        }
+
+        return $this->fileManagerService->deleteFile($citizen, $citizen->image->id, 'image');
+    }
+
+    public function updateProfileImage($img, $citizen)
+    {
+        $status = $this->deleteProfileImage($citizen);
+        if ($status) {
+        }
+        return $this->uploadProfileImage($img, $citizen) ? true : false;
     }
 }

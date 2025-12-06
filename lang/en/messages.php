@@ -12,6 +12,7 @@ return [
     'user_created'                  => 'User has been created successfully.',
     'user_deleted'                  => 'User has been deleted.',
     'user_info_updated'             => 'User info has been updated successfully',
+    'img_not_found'                 => 'Image not found.',
     'user_inactive'                 => 'Your account is not activated yet. Please check your email or enter the OTP code.',
     'invalid_credentials'           => 'Invalid email or password.',
     'unauthorized'                  => 'You are not authorized to perform this action.',
