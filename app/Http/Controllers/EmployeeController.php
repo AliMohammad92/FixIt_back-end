@@ -23,9 +23,9 @@ class EmployeeController extends Controller
 
     protected EmployeeService $service;
 
-    public function __construct()
+    public function __construct(EmployeeService $employeeService)
     {
-        $this->service = new EmployeeService();
+        $this->service = $employeeService;
     }
 
     public function store(AddEmployeeRequest $request)
@@ -44,7 +44,7 @@ class EmployeeController extends Controller
         }
 
         return $this->successResponse(
-            ['employee' => new EmployeeResource($result['user']->employee)],
+            ['employee' => new UserResource($result['user'])],
             __('messages.employee_stored'),
             201
         );

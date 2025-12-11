@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Events\OTPEvent;
 use App\Http\Requests\BaseUserRequest;
+use App\Mail\OtpMail;
 use App\Models\User;
 use App\Models\UserOTP;
+use Illuminate\Support\Facades\Mail;
 
 class OTPService
 {
@@ -28,9 +31,9 @@ class OTPService
         $otp = rand(100000, 999999);
         $expiresAt = now()->addMinutes(5);
 
-        $user = User::find($user_id);
+        $user = User::where('id', $user_id)->first();
 
-        if (!$user || $user->status) {
+        if (!$user || !$user->status) {
             return null;
         }
 
@@ -42,11 +45,11 @@ class OTPService
             'expires_at' => $expiresAt,
         ]);
 
-        // Mail::to($user->email)->send(new OtpMail($otp)); // Assuming OtpMail is a Mailable class
+        event(new OTPEvent($otp, $user->email));
+
         return [
             'user_id' => $user_id,
             'otp_sent' => __('messages.true'),
-            'otp_code' => $otp, // For testing purposes; remove in production
         ];
     }
 }

@@ -14,11 +14,16 @@ use Illuminate\Support\Facades\Cache;
 
 class EmployeeService
 {
-    protected $dao;
+    protected $dao, $ministryBranchService, $otpService;
 
-    public function __construct()
-    {
-        $this->dao = new EmployeeDAO();
+    public function __construct(
+        EmployeeDAO $employeeDAO,
+        MinistryBranchService $ministryBranchService,
+        OTPService $otpService
+    ) {
+        $this->dao = $employeeDAO;
+        $this->ministryBranchService = $ministryBranchService;
+        $this->otpService = $otpService;
     }
 
     public function store($data)
@@ -30,7 +35,7 @@ class EmployeeService
         $branchId   = $data['ministry_branch_id'] ?? null;
 
         if ($branchId) {
-            $branch = app(MinistryBranchService::class)->readOne($branchId);
+            $branch = $this->ministryBranchService->readOne($branchId);
             if ($branch->ministry_id != $ministryId) {
                 return [
                     'status' => false,
@@ -41,7 +46,7 @@ class EmployeeService
         $user = $this->dao->store($data, $dataUser);
         $user->syncRoles($data['role']);
 
-        app(OTPService::class)->resendOTP($user->id);
+        $this->otpService->resendOTP($user->id);
         return [
             'status' => true,
             'user' => $user

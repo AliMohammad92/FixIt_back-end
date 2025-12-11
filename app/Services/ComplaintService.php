@@ -4,7 +4,8 @@ namespace App\Services;
 
 use App\DAO\ComplaintDAO;
 use App\DAO\GovernorateDAO;
-use App\DAO\UserDAO;;
+use App\DAO\UserDAO;
+use App\Events\ComplaintCreated;;
 
 use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
@@ -13,20 +14,22 @@ use Illuminate\Support\Str;
 
 class ComplaintService
 {
-    protected $complaintDAO, $fileService, $cacheManager, $ministryBranchService, $replyService;
+    protected $complaintDAO, $fileService, $cacheManager, $ministryBranchService, $replyService, $employeeService;
 
     public function __construct(
         ComplaintDAO $complaintDAO,
         FileManagerService $fileService,
         CacheManagerService $cacheManager,
         MinistryBranchService $ministryBranchService,
-        ReplyService $replyService
+        ReplyService $replyService,
+        EmployeeService $employeeService
     ) {
         $this->complaintDAO = $complaintDAO;
         $this->fileService = $fileService;
         $this->cacheManager = $cacheManager;
         $this->ministryBranchService = $ministryBranchService;
         $this->replyService = $replyService;
+        $this->employeeService = $employeeService;
     }
 
     public function submitComplaint(array $data)
@@ -64,6 +67,11 @@ class ComplaintService
             relationName: 'media',
             typeResolver: fn($file) => $this->fileService->detectFileType($file)
         );
+
+        $employees = $this->employeeService->getByBranch($data['ministry_branch_id']);
+
+        event(new ComplaintCreated($complaint));
+
         return $complaint;
     }
 

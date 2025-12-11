@@ -6,9 +6,12 @@ use App\DAO\CitizenDAO;
 use App\DAO\RefreshTokenDAO;
 use App\DAO\UserDAO;
 use App\DAO\UserOtpDAO;
+use App\Events\OTPEvent;
+use App\Mail\OtpMail;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class UserService
@@ -55,11 +58,10 @@ class UserService
 
             $this->uploadProfileImage($img, $user);
 
-            // Mail::to($user->email)->send(new OtpMail($otp)); // Assuming OtpMail is a Mailable class
+            event(new OTPEvent($otp, $user->email));
             return [
                 'user_id' => $user->id,
                 'otp_sent' => true,
-                'otp_code' => app()->environment('local') ? $otp : null,
             ];
         });
     }
