@@ -14,8 +14,7 @@ class CitizenResource extends JsonResource
             'basic_info' => new UserResource($this->user),
             'national_id' => $this->national_id,
             'nationality' => $this->nationality,
-            'created_at' => $this->created_at->format('Y-m-d H:i A'),
-            'img'        => new MediaResource($this->image)
+            'created_at' => $this->created_at->format('Y-m-d H:i A')
         ];
     }
 }
