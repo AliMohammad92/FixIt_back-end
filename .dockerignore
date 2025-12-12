@@ -1,15 +1,13 @@
-# Ignore directories
-
+# Git files
 .git
 .gitignore
-.env
-vendor
-node*modules
-storage/*.log
-storage/logs/\_.log
-bootstrap/cache/\*.php
 
-# Ignore Composer/NPM files that will be generated inside the container
+# Node modules (large & unnecessary in container)
+node_modules
+npm-debug.log
 
-composer.lock
-package-lock.json
+# Laravel logs and cache (can be regenerated)
+storage/logs/*.log
+storage/framework/cache/*.*
+storage/framework/sessions/*.*
+storage/framework/views/*.*
