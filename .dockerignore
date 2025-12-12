@@ -1,0 +1,15 @@
+# Ignore directories
+
+.git
+.gitignore
+.env
+vendor
+node*modules
+storage/*.log
+storage/logs/\_.log
+bootstrap/cache/\*.php
+
+# Ignore Composer/NPM files that will be generated inside the container
+
+composer.lock
+package-lock.json
