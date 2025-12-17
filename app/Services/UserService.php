@@ -7,11 +7,8 @@ use App\DAO\RefreshTokenDAO;
 use App\DAO\UserDAO;
 use App\DAO\UserOtpDAO;
 use App\Events\OTPEvent;
-use App\Mail\OtpMail;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class UserService
@@ -47,16 +44,18 @@ class UserService
 
             $otp = rand(100000, 999999);
             $expiresAt = now()->addMinutes(5);
-            $img = $data['img'];
+            if (isset($data['img'])) {
+                $img = $data['img'];
+                unset($data['img']);
+                $this->uploadProfileImage($img, $user);
+            }
 
-            unset($data['national_id'], $data['nationality'], $data['img']);
+            unset($data['national_id'], $data['nationality']);
 
             $this->otpDAO->store($user->id, $otp, $expiresAt);
 
             $user->assignRole('citizen');
             $this->citizenDAO->store($user, $citizenData);
-
-            $this->uploadProfileImage($img, $user);
 
             event(new OTPEvent($otp, $user->email));
             return [

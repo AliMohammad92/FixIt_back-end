@@ -52,4 +52,9 @@ class User extends Authenticatable
     {
         return $this->morphOne(Media::class, 'mediable')->where('type', 'img');
     }
+    
+    public function fcmTokens()
+    {
+        return $this->hasMany(FcmToken::class);
+    }
 }

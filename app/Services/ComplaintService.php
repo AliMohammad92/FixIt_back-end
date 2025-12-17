@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 
 class ComplaintService
 {
-    protected $complaintDAO, $fileService, $cacheManager, $ministryBranchService, $replyService, $employeeService;
+    protected $complaintDAO, $fileService, $cacheManager, $ministryBranchService, $replyService, $employeeService, $firebase;
 
     public function __construct(
         ComplaintDAO $complaintDAO,
@@ -22,7 +22,8 @@ class ComplaintService
         CacheManagerService $cacheManager,
         MinistryBranchService $ministryBranchService,
         ReplyService $replyService,
-        EmployeeService $employeeService
+        EmployeeService $employeeService,
+        FirebaseNotificationService $firebase
     ) {
         $this->complaintDAO = $complaintDAO;
         $this->fileService = $fileService;
@@ -30,6 +31,7 @@ class ComplaintService
         $this->ministryBranchService = $ministryBranchService;
         $this->replyService = $replyService;
         $this->employeeService = $employeeService;
+        $this->firebase = $firebase;
     }
 
     public function submitComplaint(array $data)
@@ -161,10 +163,14 @@ class ComplaintService
         }
 
         $complaint = $this->complaintDAO->updateStatus($id, $status);
-
         $message = $status === 'resolved'
             ? __('messages.complaint_resolved')
             : __('messages.complaint_rejected') . $reason;
+
+        $user = $complaint->citizen->user;
+        foreach ($user->fcmTokens as $token) {
+            $this->firebase->sendToToken($token, "Status of complaint has been changed", $message);
+        }
 
         $this->replyService->addReply($complaint->id, $employee, $message);
         return true;

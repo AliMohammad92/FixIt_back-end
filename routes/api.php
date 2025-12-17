@@ -3,6 +3,7 @@
 use App\Http\Controllers\CitizenController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\FcmTokenController;
 use App\Http\Controllers\MinistryBranchController;
 use App\Http\Controllers\MinistryController;
 use App\Http\Controllers\ReplyController;
@@ -20,6 +21,10 @@ Route::controller(UserController::class)->group(function () {
     Route::post('upload-profile-img', 'uploadProfileImage')->middleware('auth:sanctum');
     Route::delete('delete-profile-img', 'deleteProfileImage')->middleware('auth:sanctum');
 });
+
+Route::post('/fcm-token', [FcmTokenController::class, 'store'])
+    ->middleware('auth:sanctum');
+
 
 Route::post('verify-otp', [UserOTPController::class, 'verifyOtp']);
 Route::post('resend-otp', [UserOTPController::class, 'resendOtp']);

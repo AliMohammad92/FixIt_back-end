@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SubmitComplaintRequest;
 use App\Http\Resources\ComplaintResource;
 use App\Services\ComplaintService;
+use App\Services\FirebaseNotificationService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -100,7 +101,7 @@ class ComplaintController extends Controller
         );
     }
 
-    public function updateStatus($id, Request $request)
+    public function updateStatus($id, Request $request, FirebaseNotificationService $firebaseNotification)
     {
         $request->validate([
             'status' => 'required|in:resolved,rejected',
@@ -108,7 +109,7 @@ class ComplaintController extends Controller
         ]);
 
         $result = $this->service->updateStatus($id, $request->status, $request->reason, Auth::id());
-        if ($result)
+        if ($result) 
             return $this->successResponse([], __('messages.complaint_status_updated'));
 
         return $this->errorResponse(__('messages.complaint_locked_by_other'));
