@@ -1,27 +1,29 @@
-FROM php:8.3-apache
+FROM php:8.2-cli
 
-# Install necessary extensions
-RUN docker-php-ext-install pdo pdo_mysql
+# Install system packages
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libzip-dev \
+    && docker-php-ext-install zip pdo pdo_mysql
 
-# Enable Apache mod_rewrite (important for Laravel routing)
-RUN a2enmod rewrite
-
-# Copy project files
-COPY . /var/www/html
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www
 
-# Set correct permissions
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+# Copy project files
+COPY . .
 
-# Configure Apache
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-COPY conf/000-default.conf /etc/apache2/sites-available/000-default.conf
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-# Expose port
-EXPOSE 80
+# Set permissions
+RUN chmod -R 775 storage bootstrap/cache
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Expose Render port
+EXPOSE 10000
+
+# Start Laravel
+CMD php -S 0.0.0.0:10000 -t public
