@@ -1,29 +1,28 @@
 FROM php:8.2-cli
 
-# Install system packages
+ENV COMPOSER_MEMORY_LIMIT=-1
+
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libzip-dev \
-    && docker-php-ext-install zip pdo pdo_mysql
+    libonig-dev \
+    libxml2-dev \
+    && docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    zip \
+    xml
 
-# Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www
-
-# Copy project files
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Set permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Expose Render port
 EXPOSE 10000
-
-# Start Laravel
 CMD php -S 0.0.0.0:10000 -t public
