@@ -106,9 +106,10 @@ class ComplaintController extends Controller
             'reason' => 'nullable|string|max:500'
         ]);
 
+        $reason = $request->reason ?? "";
         $this->authorize('view', $complaint);
 
-        $this->service->updateStatus($complaint, $request->status, $request->input('reason'), Auth::user()->employee);
+        $this->service->updateStatus($complaint, $request->status, $reason, Auth::user()->employee);
         return $this->successResponse([], __('messages.complaint_status_updated'));
     }
 
