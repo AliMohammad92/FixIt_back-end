@@ -179,6 +179,8 @@ class ComplaintService
         }
 
 
+        $originalLocale = app()->getLocale();
+
         $messageKey = $status === 'resolved'
             ? 'complaint_resolved'
             : 'complaint_rejected';
@@ -187,8 +189,12 @@ class ComplaintService
             "messages.$messageKey",
             ['reason' => $reason]
         );
-        $complaint = $this->complaintDAO->updateStatus($complaint, $status, $message);
 
+        app()->setLocale('ar');
+
+        $complaint = $this->complaintDAO->updateStatus($complaint, $status, __("messages.$messageKey"));
+
+        app()->setLocale($originalLocale);
         activity()
             ->performedOn($complaint)
             ->event($status)

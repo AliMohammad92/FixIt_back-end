@@ -84,42 +84,98 @@
                         <th class="p-2">الحالة / Status</th>
                     </tr>
                 </thead>
-
                 <tbody class="text-sm">
                     @foreach($activities as $activity)
                     @php
-                    $statusType = $activity->event;
+                    $status = $activity->getExtraProperty('attributes.status');
+                    $event = $activity->event;
 
-                    if (str_contains($activity->description, 'resolved')) $statusType = 'resolved';
-                    if (str_contains($activity->description, 'rejected')) $statusType = 'rejected';
+                    $isNew = ($event === 'created');
+                    $isResolved = ($status === 'resolved');
+                    $isRejected = ($status === 'rejected');
 
-                    $config = match($statusType) {
-                    'created' => ['color' => 'text-emerald-700', 'bg' => 'bg-emerald-50', 'ar' => 'جديد', 'en' => 'Created'],
-                    'resolved' => ['color' => 'text-blue-700', 'bg' => 'bg-blue-50', 'ar' => 'تم الحل', 'en' => 'Resolved'],
-                    'rejected' => ['color' => 'text-red-700', 'bg' => 'bg-red-50', 'ar' => 'مرفوض', 'en' => 'Rejected'],
-                    'updated' => ['color' => 'text-amber-700', 'bg' => 'bg-amber-50', 'ar' => 'تحديث', 'en' => 'Updated'],
-                    'deleted' => ['color' => 'text-gray-700', 'bg' => 'bg-gray-100', 'ar' => 'حذف', 'en' => 'Deleted'],
-                    default => ['color' => 'text-slate-600', 'bg' => 'bg-slate-50', 'ar' => 'نشاط', 'en' => 'Activity'],
+                    if (!$isNew && !$isResolved && !$isRejected) {
+                    continue;
+                    }
+
+
+                    $config = match(true) {
+                    $isNew => ['color' => 'text-emerald-700', 'bg' => 'bg-emerald-50', 'ar' => 'جديد', 'en' => 'New', 'border' => 'border-emerald-400'],
+                    $isResolved => ['color' => 'text-blue-700', 'bg' => 'bg-blue-50', 'ar' => 'تم الحل', 'en' => 'Resolved', 'border' => 'border-blue-400'],
+                    $isRejected => ['color' => 'text-red-700', 'bg' => 'bg-red-50', 'ar' => 'مرفوض', 'en' => 'Rejected', 'border' => 'border-red-400'],
+                    default => ['color' => 'text-slate-600', 'bg' => 'bg-slate-50', 'ar' => 'تحديث', 'en' => 'Updated', 'border' => 'border-slate-400'],
                     };
+
+                    $refNum = $activity->getExtraProperty('attributes.reference_number') ?? '---';
+
+                    // Logic for "By": Show Citizen for new, Employee for others
+                    $personName = $activity->causer
+                    ? ($activity->causer->first_name . ' ' . $activity->causer->last_name)
+                    : 'النظام / System';
+
+                    $roleLabelAr = $isNew ? 'المواطن' : 'الموظف';
+                    $roleLabelEn = $isNew ? 'Citizen' : 'Employee';
+
+                    $mainText = $activity->getExtraProperty('attributes.description') // For new complaints
+                    ?? $activity->getExtraProperty('attributes.notes') // For updates
+                    ?? '...';
                     @endphp
+
                     <tr>
-                        <td class="p-2 border-l border-b font-mono text-[10px] text-slate-500">
-                            {{ $activity->created_at->format('Y-m-d H:i A') }}
-                        </td>
-
-                        <td class="p-2 border-l border-b text-slate-700">
-                            <div class="font-bold text-xs">{{ $activity->description }}</div>
-                            @if(isset($activity->properties['attributes']['notes']))
-                            <div class="text-[10px] text-slate-500 mt-1 italic">
-                                Note: {{ $activity->properties['attributes']['notes'] }}
+                        <td class="p-3 border-l border-b text-center align-middle bg-slate-50/30" style="width: 100px;">
+                            <div class="text-[12px] font-black text-slate-700 leading-tight">
+                                {{ $activity->created_at->format('d') }}
+                                <span class="{{ $config['color'] }} uppercase">{{ $activity->created_at->format('M') }}</span>
                             </div>
-                            @endif
+                            <div class="text-[9px] font-bold text-slate-400 mb-1">{{ $activity->created_at->format('Y') }}</div>
+                            <div class="text-[8px] font-mono text-slate-500 bg-white border border-slate-200 rounded px-1">
+                                {{ $activity->created_at->format('h:i A') }}
+                            </div>
                         </td>
 
-                        <td class="p-2 border-b text-center">
-                            <div class="inline-block px-2 py-1 rounded {{ $config['bg'] }} {{ $config['color'] }}">
-                                <div class="text-[10px] font-black leading-tight">{{ $config['ar'] }}</div>
-                                <div class="text-[8px] font-bold uppercase leading-tight opacity-70">{{ $config['en'] }}</div>
+                        <td class="p-3 border-l border-b">
+                            <div class="mb-2">
+                                <div class="text-[11px] font-bold text-slate-800">
+                                    @if($isNew)
+                                    تقديم شكوى جديدة برقم:
+                                    @elseif($isResolved)
+                                    إغلاق وحل الشكوى رقم:
+                                    @else
+                                    رفض طلب الشكوى رقم:
+                                    @endif
+                                    <span class="text-blue-600 font-black">#{{ $refNum }}</span>
+                                </div>
+                                <div class="text-[9px] text-slate-400 uppercase font-bold tracking-tighter">
+                                    @if($isNew)
+                                    New Complaint Filed via Citizen Portal
+                                    @elseif($isResolved)
+                                    Case Resolution & Closure
+                                    @else
+                                    Case Rejection Notice
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[9px] bg-white text-slate-600 px-1.5 py-0.5 rounded border border-slate-200 shadow-sm">
+                                    <strong>{{ $roleLabelAr }} / {{ $roleLabelEn }}:</strong> {{ $personName }}
+                                </span>
+                            </div>
+
+                            <div class="p-2 rounded bg-white border-r-4 {{ $config['border'] }} shadow-sm">
+                                <div class="text-[9px] font-bold text-slate-500 mb-1 uppercase">
+                                    {{ $isNew ? 'نص الشكوى / Complaint Content' : 'الملاحظات / Remarks' }}:
+                                </div>
+                                <div class="text-[10px] text-slate-700 leading-relaxed italic line-clamp-2">
+                                    "{{ Str::limit($mainText, 150) }}"
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="p-3 border-b text-center align-middle" style="width: 90px;">
+                            <div class="inline-block w-full py-2 rounded-lg {{ $config['bg'] }} {{ $config['color'] }} border {{ $config['border'] }} border-opacity-30 shadow-sm">
+                                <div class="text-[11px] font-black">{{ $config['ar'] }}</div>
+                                <div class="text-[8px] font-bold uppercase opacity-60">{{ $config['en'] }}</div>
                             </div>
                         </td>
                     </tr>

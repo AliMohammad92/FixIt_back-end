@@ -10,6 +10,7 @@ use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserOTPController;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(UserController::class)->group(function () {
@@ -56,9 +57,10 @@ Route::prefix('complaint')
         Route::get('downloadMinistryReport/{ministry}', 'downloadMinistryReport');
     });
 
-// Route::get('downloadComplaintReport/{complaint}', [ReportController::class, 'downloadComplaintReport']);
-// Route::get('downloadBranchReport/{branch}', [ReportController::class, 'downloadBranchReport']);
-// Route::get('downloadMinistryReport/{ministry}', [ReportController::class, 'downloadMinistryReport']);
+
+Route::get('downloadComplaintReport/{complaint}', [ReportController::class, 'downloadComplaintReport']);
+Route::get('downloadBranchReport/{branch}', [ReportController::class, 'downloadBranchReport']);
+Route::get('downloadMinistryReport/{ministry}', [ReportController::class, 'downloadMinistryReport']);
 
 Route::prefix('complaint/reply')
     ->middleware(['auth:sanctum', 'active.user'])
