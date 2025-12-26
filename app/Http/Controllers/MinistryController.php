@@ -6,6 +6,7 @@ use App\Http\Requests\MinistryRequest;
 use App\Http\Resources\GovernorateResource;
 use App\Http\Resources\MinistryResource;
 use App\Models\Governorate;
+use App\Services\EmployeeService;
 use App\Services\MinistryService;
 use App\Traits\ResponseTrait;
 use Illuminate\Support\Facades\Auth;
@@ -15,11 +16,7 @@ class MinistryController extends Controller
 {
     use ResponseTrait;
 
-    protected MinistryService $service;
-    public function __construct()
-    {
-        $this->service = new MinistryService();
-    }
+    public function __construct(protected MinistryService $service) {}
 
     public function store(MinistryRequest $request)
     {
@@ -53,9 +50,9 @@ class MinistryController extends Controller
         return $this->successResponse(new MinistryResource($ministry), __('messages.ministry_retrieved'), 200);
     }
 
-    public function assignManager($id, $manager_id)
+    public function assignManager($id, $manager_id, EmployeeService $employeeService)
     {
-        $ministry = $this->service->assignManager($id, $manager_id);
+        $ministry = $this->service->assignManager($id, $manager_id, $employeeService);
 
         if ($ministry)
             return $this->successResponse(new MinistryResource($ministry), __('messages.ministry_manager_assigned_success'), 200);

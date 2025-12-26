@@ -59,9 +59,12 @@ class ComplaintDAO
         return $complaint;
     }
 
-    public function updateStatus($complaint, $status)
+    public function updateStatus($complaint, $status, $message)
     {
-        $complaint->update(['status' => $status]);
+        $complaint->update([
+            'status' => $status,
+            'notes' => $message
+        ]);
         return $complaint;
     }
 

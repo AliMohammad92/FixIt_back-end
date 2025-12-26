@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Cache;
 class CacheManagerService
 {
     public function clearComplaintCache(
-        int $citizenId = null,
-        int $branchId = null,
-        int $ministryId = null,
-        int $single = null,
+        ?int $citizenId = null,
+        ?int $branchId = null,
+        ?int $ministryId = null,
+        ?int $single = null,
     ) {
         Cache::forget("complaints");
         if ($citizenId) {

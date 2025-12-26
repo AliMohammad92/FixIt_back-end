@@ -8,12 +8,10 @@ use Kreait\Firebase\Messaging\Notification;
 
 class FirebaseNotificationService
 {
-    protected Messaging $messaging;
 
-    public function __construct(Messaging $messaging)
-    {
-        $this->messaging = $messaging;
-    }
+    public function __construct(
+        protected Messaging $messaging
+    ) {}
 
     public function sendToToken(string $token, string $title, string $body, array $data = []): void
     {

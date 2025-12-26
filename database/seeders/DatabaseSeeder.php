@@ -23,7 +23,9 @@ class DatabaseSeeder extends Seeder
             GovernorateSeeder::class,
             MinistrySeeder::class,
             MinistryBranchSeeder::class,
-            // CitizenSeeder::class,
+            EmployeeSeeder::class,
+            CitizenSeeder::class,
+            ComplaintSeeder::class
         ]);
     }
 }

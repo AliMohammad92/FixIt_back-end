@@ -2,20 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\DAO\EmployeeDAO;
 use App\Http\Requests\AddEmployeeRequest;
 use App\Http\Resources\EmployeeResource;
 use App\Http\Resources\UserResource;
-use App\Models\Employee;
-use App\Models\User;
 use App\Services\EmployeeService;
-use App\Services\OTPService;
+use App\Services\MinistryBranchService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-
-use function PHPUnit\Framework\isEmpty;
 
 class EmployeeController extends Controller
 {
@@ -32,7 +25,7 @@ class EmployeeController extends Controller
     {
         $data = $request->validated();
 
-        $result = $this->service->store($data);
+        $result = $this->service->store($data, app(MinistryBranchService::class));
 
         if (!$result['status']) {
             return $this->errorResponse(__('messages.ministry_branch_mismatch'), 400);

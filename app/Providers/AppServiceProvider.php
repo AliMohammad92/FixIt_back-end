@@ -21,9 +21,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::morphMap([
-            'employee' => 'App\Models\Employee',
-            'citizen' => 'App\Models\Citizen',
-            'complaint' => 'App\Models\Complaint'
+            'Employee' => 'App\Models\Employee',
+            'Citizen' => 'App\Models\Citizen',
+            'Complaint' => 'App\Models\Complaint',
+            'Refresh Token' => 'App\Models\RefreshToken',
+            'Ministry' => 'App\Models\Ministry',
+            'Ministry Branch' => 'App\Models\MinistryBranch',
+            'Reply' => 'App\Models\Reply',
         ]);
 
         Gate::policy(Complaint::class, ComplaintPolicy::class);

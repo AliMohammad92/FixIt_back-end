@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Citizen extends Model
 {
+    use LogsActivity;
+
     protected $fillable = [
         'user_id',
         'nationality',
@@ -20,5 +24,11 @@ class Citizen extends Model
     public function replies()
     {
         return $this->morphMany(Reply::class, 'sender');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['*']);
     }
 }

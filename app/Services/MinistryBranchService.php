@@ -3,17 +3,13 @@
 namespace App\Services;
 
 use App\DAO\MinistryBranchDAO;
-use App\Http\Resources\MinistryBranchResource;
 use Illuminate\Support\Facades\Cache;
 
 class MinistryBranchService
 {
-    protected $dao;
-
-    public function __construct()
-    {
-        $this->dao = new MinistryBranchDAO();
-    }
+    public function __construct(
+        protected MinistryBranchDAO $dao
+    ) {}
 
     public function store(array $data)
     {
@@ -41,9 +37,9 @@ class MinistryBranchService
         return $branch;
     }
 
-    public function assignManager($id, $manager_id)
+    public function assignManager($id, $manager_id, EmployeeService $employeeService)
     {
-        $emp = (new EmployeeService())->readOne($manager_id);
+        $emp = $employeeService->readOne($manager_id);
         Cache::forget("Branch {$id}");
         $ministry = $this->dao->assignManager($id, $manager_id);
 

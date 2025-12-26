@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Multi-Lang Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        @media print {
+            .page-break {
+                page-break-after: always;
+            }
+        }
+
+        .en {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: block;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .ar {
+            font-size: 1rem;
+            display: block;
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* Helper for side-by-side titles */
+        .lang-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-6">
+
+    <div class="max-w-5xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden mb-12 border border-gray-200">
+
+        <div class="bg-slate-800 p-6 text-white">
+            <div class="flex justify-between items-start">
+                <div class="text-right">
+                    <h1 class="text-xl font-bold tracking-wide">
+                        <span class="block">تقرير نشاط الفرع</span>
+                        <span class="text-sm font-normal text-slate-400">Branch Activity Report</span>
+                    </h1>
+                </div>
+                <div class="text-left font-bold text-blue-400">
+                    <p class="text-lg">وزارة الداخلية</p>
+                    <p class="text-xs uppercase">Ministry of Interior</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8">
+            <div class="grid grid-cols-2 gap-8 mb-8 bg-slate-50 p-4 rounded-lg border-b-2 border-slate-200">
+                <div class="text-right">
+                    <span class="text-[10px] font-black text-slate-400 uppercase">الفرع / Branch</span>
+                    <p class="text-lg font-bold text-slate-700">فرع وسط المدينة / Downtown Branch</p>
+                    <p class="text-xs text-slate-500 italic">الموقع: الرياض، حي الملز / Location: Riyadh, Al-Malaz</p>
+                </div>
+                <div class="text-left border-l border-slate-300 pl-6">
+                    <span class="text-[10px] font-black text-slate-400 uppercase">المسؤول / Responsible</span>
+                    <p class="text-lg font-bold text-slate-700">أحمد المنصور</p>
+                    <p class="text-xs text-slate-500">Ahmed Al-Mansour</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-5 gap-2 mb-10 text-center">
+                <div class="bg-slate-100 p-2 rounded border-t-4 border-slate-400">
+                    <span class="block text-[10px] font-bold text-slate-500">الإجمالي / Total</span>
+                    <p class="text-xl font-black">245</p>
+                </div>
+                <div class="bg-blue-50 p-2 rounded border-t-4 border-blue-400">
+                    <span class="block text-[10px] font-bold text-blue-600">جديد / New</span>
+                    <p class="text-xl font-black text-blue-700">12</p>
+                </div>
+                <div class="bg-yellow-50 p-2 rounded border-t-4 border-yellow-400">
+                    <span class="block text-[10px] font-bold text-yellow-600">قيد التنفيذ / In-Progress</span>
+                    <p class="text-xl font-black text-yellow-700">45</p>
+                </div>
+                <div class="bg-green-50 p-2 rounded border-t-4 border-green-400">
+                    <span class="block text-[10px] font-bold text-green-600">مكتمل / Resolved</span>
+                    <p class="text-xl font-black text-green-700">178</p>
+                </div>
+                <div class="bg-red-50 p-2 rounded border-t-4 border-red-400">
+                    <span class="block text-[10px] font-bold text-red-600">مرفوض / Rejected</span>
+                    <p class="text-xl font-black text-red-700">10</p>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="bg-slate-100 p-2 text-sm font-bold border-r-4 border-blue-600 mb-4 flex justify-between">
+                    <span>موظفي الفرع</span>
+                    <span class="text-xs font-normal">Branch Employees</span>
+                </h3>
+                <p class="text-2xl font-black px-4">18 <span class="text-sm font-normal text-slate-500">موظف /
+                        Employees</span></p>
+            </div>
+
+            <h3 class="bg-slate-100 p-2 text-sm font-bold border-r-4 border-blue-600 mb-4 flex justify-between">
+                <span>النشاط الأخير</span>
+                <span class="text-xs font-normal">Recent Activity</span>
+            </h3>
+            <table class="w-full text-right border">
+                <thead>
+                    <tr class="bg-gray-50 text-[10px] uppercase border-b">
+                        <th class="p-2 border-l">التاريخ / Date</th>
+                        <th class="p-2 border-l">الوصف / Description</th>
+                        <th class="p-2">الحالة / Status</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    <tr>
+                        <td class="p-2 border-l border-b font-mono text-xs">2024-05-10</td>
+                        <td class="p-2 border-l border-b">تحديث بيانات الشكاوى السابقة / Update previous complaints data
+                        </td>
+                        <td class="p-2 border-b text-green-600 font-bold text-xs">ناجح / Success</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-center text-[10px] text-slate-400 uppercase tracking-widest">
+        إنشاء بواسطة النظام | Generated by System — {{ date('Y-m-d') }}
+    </div>
+
+</body>
+
+</html>

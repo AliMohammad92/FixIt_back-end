@@ -14,19 +14,12 @@ use Illuminate\Support\Facades\Cache;
 
 class EmployeeService
 {
-    protected $dao, $ministryBranchService, $otpService;
-
     public function __construct(
-        EmployeeDAO $employeeDAO,
-        MinistryBranchService $ministryBranchService,
-        OTPService $otpService
-    ) {
-        $this->dao = $employeeDAO;
-        $this->ministryBranchService = $ministryBranchService;
-        $this->otpService = $otpService;
-    }
+        protected EmployeeDAO $dao,
+        protected OTPService $otpService
+    ) {}
 
-    public function store($data)
+    public function store($data, MinistryBranchService $ministryBranchService)
     {
         $dataUser = Arr::only($data, ['first_name', 'last_name', 'email', 'phone', 'role', 'address']);
         $dataUser['password'] = bcrypt($dataUser['first_name'] . '12345');
@@ -35,7 +28,7 @@ class EmployeeService
         $branchId   = $data['ministry_branch_id'] ?? null;
 
         if ($branchId) {
-            $branch = $this->ministryBranchService->readOne($branchId);
+            $branch = $ministryBranchService->readOne($branchId);
             if ($branch->ministry_id != $ministryId) {
                 return [
                     'status' => false,

@@ -12,19 +12,12 @@ use Illuminate\Support\Facades\DB;
 
 class ReplyService
 {
-    protected $replyDAO, $complaintDAO, $fileService, $cacheManager;
-
     public function __construct(
-        ReplyDAO $replyDAO,
-        ComplaintDAO $complaintDAO,
-        FileManagerService $fileService,
-        CacheManagerService $cacheManager
-    ) {
-        $this->replyDAO = $replyDAO;
-        $this->complaintDAO = $complaintDAO;
-        $this->fileService = $fileService;
-        $this->cacheManager = $cacheManager;
-    }
+        protected ReplyDAO $replyDAO,
+        protected ComplaintDAO $complaintDAO,
+        protected FileManagerService $fileService,
+        protected CacheManagerService $cacheManager
+    ) {}
 
     public function addReply($complaint, $sender, $data): Reply
     {

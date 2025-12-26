@@ -9,15 +9,10 @@ use Illuminate\Support\Facades\Cache;
 
 class CitizenService
 {
-    protected $citizenDAO, $fileManagerService;
-
     public function __construct(
-        CitizenDAO $citizenDAO,
-        FileManagerService $fileManagerService
-    ) {
-        $this->citizenDAO = $citizenDAO;
-        $this->fileManagerService = $fileManagerService;
-    }
+        protected CitizenDAO $citizenDAO,
+        protected FileManagerService $fileManagerService
+    ) {}
 
     public function read()
     {

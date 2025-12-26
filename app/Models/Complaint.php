@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Complaint extends Model
 {
+    use LogsActivity;
+
     protected $fillable = [
         'reference_number',
         'type',
@@ -17,6 +21,7 @@ class Complaint extends Model
         'citizen_id',
         'ministry_id',
         'ministry_branch_id',
+        'notes',
         'locked_by',
         'locked_at'
     ];
@@ -55,5 +60,16 @@ class Complaint extends Model
     public function governorate()
     {
         return $this->belongsTo(Governorate::class);
+    }
+
+    public function isArabic($attribute): bool
+    {
+        return (bool) preg_match('/^\p{Arabic}/u', $this->$attribute);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['*']);
     }
 }

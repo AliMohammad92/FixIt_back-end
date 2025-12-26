@@ -8,12 +8,9 @@ use Illuminate\Support\Facades\Cache;
 
 class MinistryService
 {
-    protected $dao;
-
-    public function __construct()
-    {
-        $this->dao = new MinistryDAO();
-    }
+    public function __construct(
+        protected MinistryDAO $dao
+    ) {}
 
     public function store(array $data)
     {
@@ -42,9 +39,9 @@ class MinistryService
         return $ministry;
     }
 
-    public function assignManager($id, $manager_id)
+    public function assignManager($id, $manager_id, EmployeeService $employeeService)
     {
-        $emp = (new EmployeeService())->readOne($manager_id);
+        $emp = $employeeService->readOne($manager_id);
         if ($id != $emp->ministry_id)
             return false;
 

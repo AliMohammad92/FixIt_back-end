@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Employee extends Model
 {
-    use Notifiable;
+    use Notifiable, LogsActivity;
 
     protected $fillable = [
         'user_id',
@@ -42,5 +44,11 @@ class Employee extends Model
     {
         return ($this->ministry_branch_id === $complaint->ministry_branch_id)
             || ($this->user && $this->user->hasAnyRole(['super_admin', 'ministry_manager']));
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['*']);
     }
 }

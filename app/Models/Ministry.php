@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Ministry extends Model
 {
+    use LogsActivity;
     protected $fillable = [
         'abbreviation',
         'status',
@@ -31,5 +34,16 @@ class Ministry extends Model
     {
         $locale = $locale ?: app()->getLocale();
         return $this->translations->where('locale', $locale)->first();
+    }
+
+    public function complaints()
+    {
+        return $this->hasMany(Complaint::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['*']);
     }
 }

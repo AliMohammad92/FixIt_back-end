@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-10">
+    <div class="max-w-5xl mx-auto bg-white border border-gray-200 rounded-lg overflow-hidden shadow-xl">
+        <div class="p-8 border-b-4 border-slate-800 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800">ملخص الوزارة التنفيذي</h1>
+                <h2 class="text-sm text-slate-500 uppercase tracking-widest">Ministry Executive Summary</h2>
+            </div>
+            <div class="text-left font-bold text-slate-400 text-xs">وزارة التجارة / Ministry of Commerce</div>
+        </div>
+
+        <div class="p-8">
+            <div class="mb-10 text-center bg-slate-900 text-white p-8 rounded-2xl shadow-inner">
+                <p class="text-blue-400 text-xs font-bold uppercase mb-2 tracking-widest">إجمالي الشكاوى بالوزارة /
+                    Total Ministry Complaints</p>
+                <h1 class="text-6xl font-black">1,842</h1>
+            </div>
+
+            <table class="w-full text-right border-collapse">
+                <thead>
+                    <tr class="text-[10px] font-bold text-slate-400 uppercase border-b-2">
+                        <th class="pb-3 text-right">الفرع / Branch Location</th>
+                        <th class="pb-3 text-center">جديد / New</th>
+                        <th class="pb-3 text-center">قيد التنفيذ / Progress</th>
+                        <th class="pb-3 text-center">مكتمل / Resolved</th>
+                        <th class="pb-3 text-center">مرفوض / Rejected</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y text-sm">
+                    <tr>
+                        <td class="py-5">
+                            <p class="font-bold text-slate-800">فرع دمشق</p>
+                            <p class="text-[10px] text-slate-400 uppercase">Damascus Main Branch</p>
+                        </td>
+                        <td class="text-center font-bold text-blue-600 bg-blue-50">14</td>
+                        <td class="text-center font-bold text-yellow-600">32</td>
+                        <td class="text-center font-bold text-green-600">412</td>
+                        <td class="text-center font-bold text-red-600">5</td>
+                    </tr>
+                    <tr>
+                        <td class="py-5">
+                            <p class="font-bold text-slate-800">فرع القنيطرة</p>
+                            <p class="text-[10px] text-slate-400 uppercase">Quneitra Branch</p>
+                        </td>
+                        <td class="text-center font-bold text-blue-600 bg-blue-50">8</td>
+                        <td class="text-center font-bold text-yellow-600">19</td>
+                        <td class="text-center font-bold text-green-600">280</td>
+                        <td class="text-center font-bold text-red-600">12</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="p-4 bg-slate-50 text-center border-t">
+            <p class="text-[10px] text-slate-400 font-bold uppercase">CONFIDENTIAL - للموظفين المصرح لهم فقط</p>
+        </div>
+    </div>
+</body>
+
+</html>

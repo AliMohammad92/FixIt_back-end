@@ -7,29 +7,23 @@ use App\DAO\RefreshTokenDAO;
 use App\DAO\UserDAO;
 use App\DAO\UserOtpDAO;
 use App\Events\OTPEvent;
+use App\Traits\Loggable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class UserService
 {
-    protected $userDAO, $otpDAO, $refreshTokenDAO, $citizenDAO, $citizenService, $fileManagerService;
+    use Loggable;
 
     public function __construct(
-        UserDAO $userDAO,
-        UserOtpDAO $otpDAO,
-        RefreshTokenDAO $refreshTokenDAO,
-        CitizenDAO $citizenDAO,
-        CitizenService $citizenService,
-        FileManagerService $fileManagerService
-    ) {
-        $this->userDAO = $userDAO;
-        $this->otpDAO = $otpDAO;
-        $this->refreshTokenDAO = $refreshTokenDAO;
-        $this->citizenDAO = $citizenDAO;
-        $this->citizenService = $citizenService;
-        $this->fileManagerService = $fileManagerService;
-    }
+        protected UserDAO $userDAO,
+        protected UserOtpDAO $otpDAO,
+        protected RefreshTokenDAO $refreshTokenDAO,
+        protected CitizenDAO $citizenDAO,
+        protected CitizenService $citizenService,
+        protected FileManagerService $fileManagerService
+    ) {}
 
     public function signUp(array $data)
     {

@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Governorate extends Model
 {
+    use LogsActivity;
+
     protected $fillable = ['code'];
 
     public function translations()
@@ -22,5 +26,11 @@ class Governorate extends Model
     public function MinistryBranches()
     {
         return $this->hasMany(MinistryBranch::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['*']);
     }
 }

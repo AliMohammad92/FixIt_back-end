@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreignId('governorate_id')->nullable()->constrained();
             $table->string('city_name')->nullable();
             $table->string('street_name')->nullable();
+            $table->string('notes')->nullable();
             $table->foreignId('locked_by')->nullable()->constrained('employees');
             $table->timestamp('locked_at')->nullable();
             $table->timestamps();

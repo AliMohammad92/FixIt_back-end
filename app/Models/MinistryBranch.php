@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class MinistryBranch extends Model
 {
+    use LogsActivity;
     protected $fillable = [
         'ministry_id',
         'governorate_id',
@@ -41,5 +44,16 @@ class MinistryBranch extends Model
     public function governorate()
     {
         return $this->belongsTo(Governorate::class);
+    }
+
+    public function complaints()
+    {
+        return $this->hasMany(Complaint::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['*']);
     }
 }

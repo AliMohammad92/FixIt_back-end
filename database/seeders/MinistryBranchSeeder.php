@@ -2,143 +2,90 @@
 
 namespace Database\Seeders;
 
-use App\Models\Governorate;
 use App\Models\Ministry;
 use App\Models\MinistryBranch;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class MinistryBranchSeeder extends Seeder
 {
     public function run(): void
     {
-        $data = [
-            [
-                "ministry_id" => 1,
-                "governorate_id" => 1,
-                "translations" => [
-                    "ar" => ["name" => "مديرية الصحة"],
-                    "en" => ["name" => "Health Directorate"],
-                ],
-            ],
-            [
-                "ministry_id" => 1,
-                "governorate_id" => 2,
-                "translations" => [
-                    "ar" => ["name" => "مركز الرعاية الطبية"],
-                    "en" => ["name" => "Medical Care Center"],
-                ],
-            ],
-            [
-                "ministry_id" => 2,
-                "governorate_id" => 3,
-                "translations" => [
-                    "ar" => ["name" => "مكتب التربية والتعليم"],
-                    "en" => ["name" => "Office of Education"],
-                ],
-            ],
-            [
-                "ministry_id" => 2,
-                "governorate_id" => 4,
-                "translations" => [
-                    "ar" => ["name" => "مديرية المناهج والتدريب"],
-                    "en" => ["name" => "Curriculum and Training Directorate"],
-                ],
-            ],
-            [
-                "ministry_id" => 3,
-                "governorate_id" => 5,
-                "translations" => [
-                    "ar" => ["name" => "دائرة الكهرباء العامة"],
-                    "en" => ["name" => "General Electricity Department"],
-                ],
-            ],
-            [
-                "ministry_id" => 3,
-                "governorate_id" => 6,
-                "translations" => [
-                    "ar" => ["name" => "محطة توليد الطاقة الشمالية"],
-                    "en" => ["name" => "Northern Power Generation Station"],
-                ],
-            ],
-            [
-                "ministry_id" => 4,
-                "governorate_id" => 7,
-                "translations" => [
-                    "ar" => ["name" => "مركز الاتصالات الرئيسي"],
-                    "en" => ["name" => "Main Communications Center"],
-                ],
-            ],
-            [
-                "ministry_id" => 4,
-                "governorate_id" => 8,
-                "translations" => [
-                    "ar" => ["name" => "إدارة خدمات الإنترنت"],
-                    "en" => ["name" => "Internet Services Administration"],
-                ],
-            ],
-            [
-                "ministry_id" => 5,
-                "governorate_id" => 9,
-                "translations" => [
-                    "ar" => ["name" => "إدارة النقل والمواصلات"],
-                    "en" => ["name" => "Transportation Administration"],
-                ],
-            ],
-            [
-                "ministry_id" => 5,
-                "governorate_id" => 10,
-                "translations" => [
-                    "ar" => ["name" => "مكتب تراخيص المركبات"],
-                    "en" => ["name" => "Vehicle Licensing Office"],
-                ],
-            ],
-            [
-                "ministry_id" => 6,
-                "governorate_id" => 11,
-                "translations" => [
-                    "ar" => ["name" => "مديرية الثقافة العامة"],
-                    "en" => ["name" => "General Directorate of Culture"],
-                ],
-            ],
-            [
-                "ministry_id" => 6,
-                "governorate_id" => 12,
-                "translations" => [
-                    "ar" => ["name" => "مكتبة الثقافة الوطنية"],
-                    "en" => ["name" => "National Culture Library"],
-                ],
-            ],
-            [
-                "ministry_id" => 7,
-                "governorate_id" => 13,
-                "translations" => [
-                    "ar" => ["name" => "دائرة المالية المركزية"],
-                    "en" => ["name" => "Central Finance Department"],
-                ],
-            ],
-            [
-                "ministry_id" => 7,
-                "governorate_id" => 14,
-                "translations" => [
-                    "ar" => ["name" => "مكتب الضرائب الإقليمي"],
-                    "en" => ["name" => "Regional Tax Office"],
-                ],
-            ]
-        ];
+        $governorateIds = range(1, 14);
+        $ministries = Ministry::all();
 
-        foreach ($data as $branch) {
-            $x = MinistryBranch::create([
-                'ministry_id' => $branch['ministry_id'],
-                'governorate_id' => $branch['governorate_id']
-            ]);
+        foreach ($ministries as $ministry) {
 
-            foreach ($branch['translations'] as $locale => $trans) {
-                $x->translations()->create([
-                    'locale' => $locale,
-                    'name'  => $trans['name']
+            $branchTemplates = $this->getBranchTemplates($ministry->abbreviation);
+
+            foreach ($branchTemplates as $index => $template) {
+                $branch = MinistryBranch::create([
+                    'ministry_id'    => $ministry->id,
+                    'governorate_id' => $governorateIds[$index % count($governorateIds)],
                 ]);
+
+                foreach ($template as $locale => $name) {
+                    $branch->translations()->create([
+                        'locale' => $locale,
+                        'name'   => $name,
+                    ]);
+                }
             }
         }
+    }
+
+    private function getBranchTemplates($abbr): array
+    {
+        return match ($abbr) {
+            'MoH' => [
+                ['ar' => 'مديرية الصحة', 'en' => 'Health Directorate'],
+                ['ar' => 'منظومة الإسعاف والطوارئ', 'en' => 'Ambulance and Emergency System'],
+                ['ar' => 'مركز الرعاية الصحية الأولية', 'en' => 'Primary Healthcare Center'],
+                ['ar' => 'إدارة المشافي العامة', 'en' => 'Public Hospitals Administration'],
+                ['ar' => 'دائرة الرقابة الدوائية', 'en' => 'Pharmaceutical Control Department'],
+            ],
+            'MoE' => [
+                ['ar' => 'مديرية التربية', 'en' => 'Education Directorate'],
+                ['ar' => 'دائرة الامتحانات', 'en' => 'Examinations Department'],
+                ['ar' => 'مجمع الخدمات التربوية', 'en' => 'Educational Services Complex'],
+                ['ar' => 'إدارة الأبنية المدرسية', 'en' => 'School Buildings Administration'],
+                ['ar' => 'مركز المناهج والوسائل التعليمية', 'en' => 'Curricula and Teaching Aids Center'],
+            ],
+            'MoI' => [
+                ['ar' => 'فرع الهجرة والجوازات', 'en' => 'Immigration and Passports Branch'],
+                ['ar' => 'مديرية الشؤون المدنية', 'en' => 'Civil Affairs Directorate'],
+                ['ar' => 'قسم السجل المدني', 'en' => 'Civil Registry Department'],
+                ['ar' => 'قيادة الشرطة', 'en' => 'Police Command'],
+                ['ar' => 'فرع المرور', 'en' => 'Traffic Branch'],
+            ],
+            'MoF' => [
+                ['ar' => 'مديرية مالية المحافظة', 'en' => 'Provincial Finance Directorate'],
+                ['ar' => 'دائرة الدخل والضرائب', 'en' => 'Income and Tax Department'],
+                ['ar' => 'قسم العقارات والمصالح العقارية', 'en' => 'Real Estate Interests Department'],
+                ['ar' => 'مديرية الجمارك', 'en' => 'Customs Directorate'],
+                ['ar' => 'مكتب الاستعلام الضريبي', 'en' => 'Tax Inquiry Office'],
+            ],
+            'MoCIT' => [
+                ['ar' => 'مركز خدمة المواطن الإلكتروني', 'en' => 'Electronic Citizen Service Center'],
+                ['ar' => 'مديرية الاتصالات', 'en' => 'Telecommunications Directorate'],
+                ['ar' => 'قسم الخدمات التقنية', 'en' => 'Technical Services Department'],
+                ['ar' => 'إدارة خدمات البريد', 'en' => 'Postal Services Administration'],
+                ['ar' => 'مركز النفاذ والبيانات', 'en' => 'Data and Access Center'],
+            ],
+            'MoO' => [
+                ['ar' => 'شركة مصفاة النفط', 'en' => 'Oil Refinery Company'],
+                ['ar' => 'مديرية حقول الغاز', 'en' => 'Gas Fields Directorate'],
+                ['ar' => 'شركة محروقات', 'en' => 'Fuel Company'],
+                ['ar' => 'إدارة الثروة المعدنية', 'en' => 'Mineral Resources Administration'],
+                ['ar' => 'مركز توزيع المشتقات النفطية', 'en' => 'Petroleum Derivatives Distribution Center'],
+            ],
+            // Default generic branches for other ministries
+            default => [
+                ['ar' => 'المديرية المركزية', 'en' => 'Central Directorate'],
+                ['ar' => 'دائرة الشؤون الإدارية', 'en' => 'Administrative Affairs Department'],
+                ['ar' => 'مكتب خدمة المراجعين', 'en' => 'Customer Service Office'],
+                ['ar' => 'فرع الخدمات العامة', 'en' => 'General Services Branch'],
+                ['ar' => 'قسم المتابعة والتقييم', 'en' => 'Monitoring and Evaluation Department'],
+            ],
+        };
     }
 }
